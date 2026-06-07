@@ -291,69 +291,68 @@
 // ══════════════════════════════════════════
 
 const PLAYERS = [
-  "Anand","Aruna","Chandrashekhar","Hariprasad","Harsha",
-  "Jeetu","Kireet","Nikhil","Nitish","Pavan",
-  "Rohan","Setu","Soham","Sriram","Srivatsa","Sushmit"
+  "Anand","Hariprasad","Harsha","Jeetu","Kireet","Nikhil","Pavan B.P","Pavan G.K",
+  "Pavan Jami","Rahul","Ramya","Rohan","Setu","Sriram","Sushmit","Vinayak"
 ];
 
 // Group stage picks (Pick 1 = top tier, Pick 2 = lower tier)
 const GROUP_PICKS = {
   "Anand":          { p1: "England",      p2: "Costa Rica" },
-  "Aruna":          { p1: "Mexico",       p2: "Wales" },
-  "Chandrashekhar": { p1: "Portugal",     p2: "Japan" },
-  "Hariprasad":     { p1: "Spain",        p2: "Poland" },
-  "Harsha":         { p1: "Belgium",      p2: "Cameroon" },
+  "Hariprasad":     { p1: "Mexico",       p2: "Wales" },
+  "Harsha":         { p1: "Portugal",     p2: "Japan" },
   "Jeetu":          { p1: "Denmark",      p2: "Saudi Arabia" },
   "Kireet":         { p1: "Netherlands",  p2: "Iran" },
   "Nikhil":         { p1: "Argentina",    p2: "Ecuador" },
-  "Nitish":         { p1: "France",       p2: "Tunisia" },
-  "Pavan":          { p1: "Germany",      p2: "Australia" },
+  "Pavan B.P":      { p1: "France",       p2: "Tunisia" },
+  "Pavan G.K":      { p1: "Germany",      p2: "Australia" },
+  "Pavan Jami":     { p1: "Spain",        p2: "Poland" },
+  "Rahul":          { p1: "Belgium",      p2: "Cameroon" },
+  "Ramya":          { p1: "Spain",        p2: "Poland" },
   "Rohan":          { p1: "United States",p2: "Qatar" },
   "Setu":           { p1: "Uruguay",      p2: "Canada" },
-  "Soham":          { p1: "Senegal",      p2: "Serbia" },
   "Sriram":         { p1: "Switzerland",  p2: "Morocco" },
-  "Srivatsa":       { p1: "Croatia",      p2: "Korea Republic" },
   "Sushmit":        { p1: "Brazil",       p2: "Ghana" },
+  "Vinayak":        { p1: "Senegal",      p2: "Serbia" },
 };
 
 // Knockout picks
 const KO_PICKS = {
-  "Anand":          { p1: "England",      p2: "Costa Rica" },
-  "Aruna":          { p1: "Mexico",       p2: "Wales" },
-  "Chandrashekhar": { p1: "Portugal",     p2: "Japan" },
-  "Hariprasad":     { p1: "Spain",        p2: "Poland" },
-  "Harsha":         { p1: "Belgium",      p2: "Cameroon" },
+   "Anand":          { p1: "England",      p2: "Costa Rica" },
+  "Hariprasad":     { p1: "Mexico",       p2: "Wales" },
+  "Harsha":         { p1: "Portugal",     p2: "Japan" },
   "Jeetu":          { p1: "Denmark",      p2: "Saudi Arabia" },
   "Kireet":         { p1: "Netherlands",  p2: "Iran" },
   "Nikhil":         { p1: "Argentina",    p2: "Ecuador" },
-  "Nitish":         { p1: "France",       p2: "Tunisia" },
-  "Pavan":          { p1: "Germany",      p2: "Australia" },
+  "Pavan B.P":      { p1: "France",       p2: "Tunisia" },
+  "Pavan G.K":      { p1: "Germany",      p2: "Australia" },
+  "Pavan Jami":     { p1: "Spain",        p2: "Poland" },
+  "Rahul":          { p1: "Belgium",      p2: "Cameroon" },
+  "Ramya":          { p1: "Spain",        p2: "Poland" },
   "Rohan":          { p1: "United States",p2: "Qatar" },
   "Setu":           { p1: "Uruguay",      p2: "Canada" },
-  "Soham":          { p1: "Senegal",      p2: "Serbia" },
   "Sriram":         { p1: "Switzerland",  p2: "Morocco" },
-  "Srivatsa":       { p1: "Croatia",      p2: "Korea Republic" },
   "Sushmit":        { p1: "Brazil",       p2: "Ghana" },
+  "Vinayak":        { p1: "Senegal",      p2: "Serbia" },
 };
 
 // Predictions
 const PREDICTIONS = {
   "Anand":          { boot: "Harry Kane",       glove: "Allison Becker",  winner: "Portugal" },
-  "Aruna":          { boot: "Lionel Messi",     glove: "Allison Becker",  winner: "Argentina" },
-  "Chandrashekhar": { boot: "Lionel Messi",     glove: "Allison Becker",  winner: "Brazil" },
   "Hariprasad":     { boot: "Harry Kane",       glove: "Allison Becker",  winner: "Brazil" },
   "Harsha":         { boot: "Mbappe",           glove: "Thibaut Courtois",winner: "France" },
   "Jeetu":          { boot: "Lautaro Martinez", glove: "Thibaut Courtois",winner: "Belgium" },
   "Kireet":         { boot: "Vinicius Jr",      glove: "Thibaut Courtois",winner: "Brazil" },
   "Nikhil":         { boot: "Harry Kane",       glove: "Allison Becker",  winner: "Brazil" },
-  "Nitish":         { boot: "Mbappe",           glove: "Manuel Neuer",    winner: "Germany" },
-  "Pavan":          { boot: "Harry Kane",       glove: "Hugo Lloris",     winner: "Brazil" },
+  "Pavan B.P":      { boot: "Mbappe",           glove: "Manuel Neuer",    winner: "Germany" },
+  "Pavan G.K":      { boot: "Harry Kane",       glove: "Hugo Lloris",     winner: "Brazil" },
+  "Pavan Jami":     { boot: "Lionel Messi",     glove: "Allison Becker",  winner: "Argentina" },
+  "Rahul":          { boot: "Lionel Messi",     glove: "Allison Becker",  winner: "Brazil" },
   "Rohan":          { boot: "Neymar",           glove: "Allison Becker",  winner: "Argentina" },
+  "Ramya":          { boot: "Neymar",           glove: "Thibaut Courtois",winner: "Argentina" },
   "Setu":           { boot: "Mbappe",           glove: "Allison Becker",  winner: "Argentina" },
-  "Soham":          { boot: "Neymar",           glove: "Thibaut Courtois",winner: "Argentina" },
-  "Sriram":         { boot: "Harry Kane",       glove: "Emi Martinez",    winner: "Argentina" },
-  "Srivatsa":       { boot: "Mbappe",           glove: "Alisson Becker",  winner: "Brazil" },
+  "Sriram":         { boot: "Harry Kane",       glove: "Emi Martinez",    winner: "Argentina" }, 
   "Sushmit":        { boot: "Lautaro Martinez", glove: "Alisson Becker",  winner: "Brazil" },
+  "Vinayak":        { boot: "Mbappe",           glove: "Alisson Becker",  winner: "Brazil" },
 };
 
 // Country flag emoji lookup (subset)
