@@ -296,44 +296,44 @@ const PLAYERS = [
   "Pavan Jami","Rahul","Ramya","Rohan","Setu","Sriram","Sushmit","Vinayak"
 ];
 
-// Group stage picks (Pick 1 = top tier, Pick 2 = lower tier)
+// Group stage picks (Pick 1 = top tier, Pick 2 & 3 = lower tier)
 const GROUP_PICKS = {
-  "Anand":          { p1: "England",      p2: "Costa Rica" },
-  "Hariprasad":     { p1: "Mexico",       p2: "Paraguay" },
-  "Harsha":         { p1: "Portugal",     p2: "Japan" },
-  "Jeetu":          { p1: "Denmark",      p2: "South Africa" },
-  "Kireet":         { p1: "Netherlands",  p2: "Iran" },
-  "Nikhil":         { p1: "Argentina",    p2: "Ecuador" },
-  "Pavan B.P":      { p1: "France",       p2: "Tunisia" },
-  "Pavan G.K":      { p1: "Germany",      p2: "Australia" },
-  "Pavan Jami":     { p1: "Spain",        p2: "Poland" },
-  "Rahul":          { p1: "Belgium",      p2: "Cameroon" },
-  "Ramya":          { p1: "Iraq",        p2: "Poland" },
-  "Rohan":          { p1: "United States",p2: "Qatar" },
-  "Setu":           { p1: "Uruguay",      p2: "Canada" },
-  "Sriram":         { p1: "Switzerland",  p2: "Morocco" },
-  "Sushmit":        { p1: "Brazil",       p2: "Ghana" },
-  "Vinayak":        { p1: "Senegal",      p2: "Serbia" },
+  "Anand":          { p1: "Netherlands",  p2: "Qatar"},
+  "Hariprasad":     { p1: "Brazil",       p2: "Jordan" },
+  "Harsha":         { p1: "Portugal",     p2: "South Africa" },
+  "Jeetu":          { p1: "Uruguay",      p2: "Sweden" },
+  "Kireet":         { p1: "Argentina",    p2: "Ivory Coast" },
+  "Nikhil":         { p1: "France",       p2: "Canada" },
+  "Pavan B.P":      { p1: "Spain",        p2: "Uzbekistan" },
+  "Pavan G.K":      { p1: "Mexico",       p2: "Turkey" },
+  "Pavan Jami":     { p1: "England",      p2: "Panama" },
+  "Rahul":          { p1: "Croatia",      p2: "Algeria" },
+  "Ramya":          { p1: "Colombia",     p2: "Scotland" },
+  "Rohan":          { p1: "Senegal",      p2: "Qatar" },
+  "Setu":           { p1: "United States",p2: "Egypt" },
+  "Sriram":         { p1: "Morocco",      p2: "Ecuador" },
+  "Sushmit":        { p1: "Germany",      p2: "Norway" },
+  "Vinayak":        { p1: "Belgium",      p2: "Ghana" },
 };
 
 // Knockout picks
 const KO_PICKS = {
-   "Anand":          { p1: "England",      p2: "Costa Rica" },
-  "Hariprasad":     { p1: "Mexico",       p2: "Paraguay" },
-  "Harsha":         { p1: "Portugal",     p2: "Japan" },
-  "Jeetu":          { p1: "Denmark",      p2: "South Africa" },
-  "Kireet":         { p1: "Netherlands",  p2: "Iran" },
-  "Nikhil":         { p1: "Argentina",    p2: "Ecuador" },
-  "Pavan B.P":      { p1: "France",       p2: "Tunisia" },
-  "Pavan G.K":      { p1: "Germany",      p2: "Australia" },
-  "Pavan Jami":     { p1: "Spain",        p2: "Poland" },
-  "Rahul":          { p1: "Belgium",      p2: "Cameroon" },
-  "Ramya":          { p1: "Iraq",        p2: "Poland" },
-  "Rohan":          { p1: "United States",p2: "Qatar" },
-  "Setu":           { p1: "Uruguay",      p2: "Canada" },
-  "Sriram":         { p1: "Switzerland",  p2: "Morocco" },
-  "Sushmit":        { p1: "Brazil",       p2: "Ghana" },
-  "Vinayak":        { p1: "Senegal",      p2: "Serbia" },
+  "Anand":          { p1: "Netherlands",  p2: "Qatar"},
+  "Hariprasad":     { p1: "Brazil",       p2: "Jordan" },
+  "Harsha":         { p1: "Portugal",     p2: "South Africa" },
+  "Jeetu":          { p1: "Uruguay",      p2: "Sweden" },
+  "Kireet":         { p1: "Argentina",    p2: "Ivory Coast" },
+  "Nikhil":         { p1: "France",       p2: "Canada" },
+  "Pavan B.P":      { p1: "Spain",        p2: "Uzbekistan" },
+  "Pavan G.K":      { p1: "Mexico",       p2: "Turkey" },
+  "Pavan Jami":     { p1: "England",      p2: "Panama" },
+  "Rahul":          { p1: "Croatia",      p2: "Algeria" },
+  "Ramya":          { p1: "Colombia",     p2: "Scotland" },
+  "Rohan":          { p1: "Senegal",      p2: "Qatar" },
+  "Setu":           { p1: "United States",p2: "Egypt" },
+  "Sriram":         { p1: "Morocco",      p2: "Ecuador" },
+  "Sushmit":        { p1: "Germany",      p2: "Norway" },
+  "Vinayak":        { p1: "Belgium",      p2: "Ghana" },
 };
 
 // Predictions
@@ -358,11 +358,11 @@ const PREDICTIONS = {
 
 // Country flag emoji lookup (subset)
 const FLAGS = {
-  "England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","France":"🇫🇷","Spain":"🇪🇸","Germany":"🇩🇪","Brazil":"🇧🇷",
+  "England":"ENG","France":"🇫🇷","Spain":"🇪🇸","Germany":"🇩🇪","Brazil":"🇧🇷",
   "Argentina":"🇦🇷","Portugal":"🇵🇹","Netherlands":"🇳🇱","Belgium":"🇧🇪","Denmark":"🇩🇰",
   "Croatia":"🇭🇷","Uruguay":"🇺🇾","Mexico":"🇲🇽","Senegal":"🇸🇳","Switzerland":"🇨🇭",
   "United States":"🇺🇸","Poland":"🇵🇱","Morocco":"🇲🇦","Japan":"🇯🇵","Korea Republic":"🇰🇷",
-  "Australia":"🇦🇺","Canada":"🇨🇦","Ghana":"🇬🇭","Wales":"🏴󠁧󠁢󠁷󠁬󠁳󠁿","Ecuador":"🇪🇨",
+  "Australia":"🇦🇺","Canada":"🇨🇦","Ghana":"🇬🇭","Wales":"WAL","Ecuador":"🇪🇨",
   "Costa Rica":"🇨🇷","Tunisia":"🇹🇳","Cameroon":"🇨🇲","Saudi Arabia":"🇸🇦","Iran":"🇮🇷",
   "Serbia":"🇷🇸","Qatar":"🇶🇦","Bolivia":"🇧🇴","Panama":"🇵🇦","Guatemala":"🇬🇹",
   "USA":"🇺🇸","Netherlands":"🇳🇱"
