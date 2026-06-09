@@ -665,18 +665,38 @@ const awayOwners = PLAYERS.filter(p => {
   container.innerHTML = html;
 }
 
-
 function saveScore(matchId) {
   const h = document.getElementById('h-' + matchId);
   const a = document.getElementById('a-' + matchId);
   if (h.value === '' || a.value === '') { showToast('Enter both scores!', '#E74C3C'); return; }
   state.scores[matchId] = { home: parseInt(h.value), away: parseInt(a.value) };
   saveState();
-  const btn = document.querySelector(`#card-${matchId} .save-btn`);
-  btn.textContent = '✓ Saved'; btn.classList.add('saved');
+  // Update button group to show Save (saved state) + Reset
+  const card = document.getElementById('card-' + matchId);
+  const btnGroup = card.querySelector('.btn-group');
+  btnGroup.innerHTML = `
+    <button class="save-btn saved" onclick="saveScore('${matchId}')">✓ Saved</button>
+    <button class="reset-btn" onclick="resetScore('${matchId}')">Reset</button>`;
   showToast('Score saved ✓');
   renderLeaderboard();
 }
+
+function resetScore(matchId) {
+  delete state.scores[matchId];
+  saveState();
+  // Clear the inputs and revert to unsaved state
+  const h = document.getElementById('h-' + matchId);
+  const a = document.getElementById('a-' + matchId);
+  if (h) { h.value = ''; }
+  if (a) { a.value = ''; }
+  // Revert button group to just Save
+  const card = document.getElementById('card-' + matchId);
+  const btnGroup = card.querySelector('.btn-group');
+  btnGroup.innerHTML = `<button class="save-btn" onclick="saveScore('${matchId}')">Save</button>`;
+  showToast('Score cleared', '#8090A0');
+  renderLeaderboard();
+}
+
 
 // ── PICKS ──
 function renderPicks() {
