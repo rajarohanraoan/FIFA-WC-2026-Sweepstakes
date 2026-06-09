@@ -166,7 +166,7 @@
   .ppc-row .val { color: var(--cream); font-weight: 400; text-align: right; }
   .ppc-row .val.team { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 1px; color: var(--white); }
 
-  /* ── SUPRE CHIP PANEL ── */
+  /* ── SUPER CHIP PANEL ── */
   .chip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
   .chip-card {
     background: var(--ink3); border: 1px solid var(--border);
@@ -417,83 +417,139 @@ function saveState() {
 }
 
 // ── SCORING ENGINE ──
+// ─────────────────────────────────────────────
+// SWEEPSTAKES SCORING ENGINE
+// Rules:
+// Win = +3
+// Draw = +1
+// Loss = 0
+// +1 per goal scored
+// -1 per goal conceded
+// +2 clean sheet
+// No stage multipliers
+// No home/away advantage
+// Super Chip doubles points for one selected match
+// Penalty shootouts DO NOT affect scoring
+// ─────────────────────────────────────────────
+
 function getMatchScore(matchId) {
   return state.scores[matchId] || null;
 }
 
-function getPlayerChipMatch(player, match) {
-  const playerChip = state.chips[player];
-  if (!playerChip) return null;
+function calculateTeamPoints(goalsFor, goalsAgainst) {
 
-  // Supports either:
-  // 1) state.chips[player] = 'match-id'
-  // 2) state.chips[player] = { group: 'match-id', ko: 'match-id' }
-  if (typeof playerChip === 'string') return playerChip;
+  let points = 0;
 
-  const chipStage = match.stage === 'group' ? 'group' : 'ko';
-  return playerChip[chipStage] || null;
-}
+  // Match result
+  if (goalsFor > goalsAgainst) {
+    points += 3;
+  } else if (goalsFor === goalsAgainst) {
+    points += 1;
+  }
+  // Loss = 0
 
-function getTeamMatchPoints(team, match, sc) {
-  if (team !== match.home && team !== match.away) return 0;
+  // Goals scored
+  points += goalsFor;
 
-  const goalsFor = team === match.home ? sc.home : sc.away;
-  const goalsAgainst = team === match.home ? sc.away : sc.home;
+  // Goals conceded
+  points -= goalsAgainst;
 
-  const resultPoints =
-    goalsFor > goalsAgainst ? 3 :
-    goalsFor === goalsAgainst ? 1 :
-    0;
+  // Clean sheet
+  if (goalsAgainst === 0) {
+    points += 2;
+  }
 
-  const scoredPoints = goalsFor;
-  const concededDeduction = goalsAgainst;
-
-  return resultPoints + scoredPoints - concededDeduction;
+  return points;
 }
 
 function computePoints(player, stage) {
-  // Use group picks for group stage, KO picks for knockout stage
-  const picks = stage === 'group' ? GROUP_PICKS[player] : KO_PICKS[player];
+
+  const picks =
+    stage === "group"
+      ? GROUP_PICKS[player]
+      : KO_PICKS[player];
+
   if (!picks) return 0;
 
-  const myTeams = [picks.p1, picks.p2];
+  const selectedTeams = [picks.p1, picks.p2];
   let total = 0;
 
   for (const match of MATCH_SCHEDULE) {
-    const inStage = stage === 'group'
-      ? match.stage === 'group'
-      : ['r32', 'r16', 'qf', 'sf', 'final'].includes(match.stage);
 
-    if (!inStage) continue;
+    const isRelevantMatch =
+      stage === "group"
+        ? match.stage === "group"
+        : ["r32", "r16", "qf", "sf", "final"].includes(match.stage);
 
-    const sc = getMatchScore(match.id);
-    if (!sc) continue;
+    if (!isRelevantMatch) continue;
 
-    let matchTotal = 0;
+    const score = getMatchScore(match.id);
 
-    for (const team of myTeams) {
-      matchTotal += getTeamMatchPoints(team, match, sc);
+    if (!score) continue;
+
+    for (const team of selectedTeams) {
+
+      let goalsFor;
+      let goalsAgainst;
+
+      if (team === match.home) {
+
+        goalsFor = score.home;
+        goalsAgainst = score.away;
+
+      } else if (team === match.away) {
+
+        goalsFor = score.away;
+        goalsAgainst = score.home;
+
+      } else {
+
+        continue;
+
+      }
+
+      let teamPoints =
+        calculateTeamPoints(goalsFor, goalsAgainst);
+
+      // Super Chip
+      const chipStage =
+        match.stage === "group"
+          ? "group"
+          : "ko";
+
+      const chipData = state.chips[player];
+      const chipMatch =
+        chipData
+          ? chipData[chipStage]
+          : null;
+
+      if (chipMatch === match.id) {
+        teamPoints *= 2;
+      }
+
+      total += teamPoints;
     }
-
-    // Super chip doubles that player's score for this specific match
-    const chipMatch = getPlayerChipMatch(player, match);
-    if (chipMatch === match.id) {
-      matchTotal *= 2;
-    }
-
-    total += matchTotal;
   }
 
   return total;
 }
 
 function getRankedPlayers(stage) {
+
   return [...PLAYERS]
     .map(player => ({
       name: player,
       pts: computePoints(player, stage)
     }))
-    .sort((a, b) => b.pts - a.pts);
+    .sort((a, b) => {
+
+      if (b.pts !== a.pts) {
+        return b.pts - a.pts;
+      }
+
+      return a.name.localeCompare(b.name);
+
+    });
 }
 
 // ── LEADERBOARD ──
