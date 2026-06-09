@@ -357,6 +357,19 @@ const PREDICTIONS = {
   "Vinayak":        { boot: "Mbappe",           glove: "Alisson Becker",  winner: "Brazil" },
 };
 
+  // Country flag emoji lookup (subset)
+const FLAGS = {
+  "England":"ENG","France":"🇫🇷","Spain":"🇪🇸","Germany":"🇩🇪","Brazil":"🇧🇷",
+  "Argentina":"🇦🇷","Portugal":"🇵🇹","Netherlands":"🇳🇱","Belgium":"🇧🇪","Denmark":"🇩🇰",
+  "Croatia":"🇭🇷","Uruguay":"🇺🇾","Mexico":"🇲🇽","Senegal":"🇸🇳","Switzerland":"🇨🇭",
+  "United States":"🇺🇸","Poland":"🇵🇱","Morocco":"🇲🇦","Japan":"🇯🇵","Korea Republic":"🇰🇷",
+  "Australia":"🇦🇺","Canada":"🇨🇦","Ghana":"🇬🇭","Wales":"WAL","Ecuador":"🇪🇨",
+  "Costa Rica":"🇨🇷","Tunisia":"🇹🇳","Cameroon":"🇨🇲","Saudi Arabia":"🇸🇦","Iran":"🇮🇷",
+  "Serbia":"🇷🇸","Qatar":"🇶🇦","Bolivia":"🇧🇴","Panama":"🇵🇦","Guatemala":"🇬🇹",
+  "USA":"🇺🇸","Netherlands":"🇳🇱"
+};
+function flag(team) { return FLAGS[team] || "🏳️"; }
+
 
 // ── MATCH SCHEDULE (Group Stage + KO template) ──
 // stage: 'group' | 'r32' | 'r16' | 'qf' | 'sf' | 'final'
@@ -658,19 +671,6 @@ function renderPicks() {
 
 }
  
-// Country flag emoji lookup (subset)
-const FLAGS = {
-  "England":"ENG","France":"🇫🇷","Spain":"🇪🇸","Germany":"🇩🇪","Brazil":"🇧🇷",
-  "Argentina":"🇦🇷","Portugal":"🇵🇹","Netherlands":"🇳🇱","Belgium":"🇧🇪","Denmark":"🇩🇰",
-  "Croatia":"🇭🇷","Uruguay":"🇺🇾","Mexico":"🇲🇽","Senegal":"🇸🇳","Switzerland":"🇨🇭",
-  "United States":"🇺🇸","Poland":"🇵🇱","Morocco":"🇲🇦","Japan":"🇯🇵","Korea Republic":"🇰🇷",
-  "Australia":"🇦🇺","Canada":"🇨🇦","Ghana":"🇬🇭","Wales":"WAL","Ecuador":"🇪🇨",
-  "Costa Rica":"🇨🇷","Tunisia":"🇹🇳","Cameroon":"🇨🇲","Saudi Arabia":"🇸🇦","Iran":"🇮🇷",
-  "Serbia":"🇷🇸","Qatar":"🇶🇦","Bolivia":"🇧🇴","Panama":"🇵🇦","Guatemala":"🇬🇹",
-  "USA":"🇺🇸","Netherlands":"🇳🇱"
-};
-function flag(team) { return FLAGS[team] || "🏳️"; }
-  
 // ── SUPER CHIPS ──
 function renderChips() {
   const container = document.getElementById('chips-container');
