@@ -654,13 +654,17 @@ const awayOwners = PLAYERS.filter(p => {
           <div class="team-name-label">${m.away}</div>
           ${awayOwners ? `<div class="team-owner">👤 ${awayOwners}</div>` : ''}
         </div>
-        <button class="save-btn${saved?' saved':''}" onclick="saveScore('${m.id}')">${saved?'✓ Saved':'Save'}</button>
+       <div class="btn-group">
+          <button class="save-btn${saved?' saved':''}" onclick="saveScore('${m.id}')">${saved?'✓ Saved':'Save'}</button>
+          ${saved ? `<button class="reset-btn" onclick="resetScore('${m.id}')">Reset</button>` : ''}
+        </div>
       </div>`;
     }
     html += '</div>';
   }
   container.innerHTML = html;
 }
+
 
 function saveScore(matchId) {
   const h = document.getElementById('h-' + matchId);
