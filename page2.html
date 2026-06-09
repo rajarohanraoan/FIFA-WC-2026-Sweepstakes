@@ -414,8 +414,38 @@ function getMatchScore(matchId) {
   return state.scores[matchId] || null;
 }
 
+function getPlayerChipMatch(player, match) {
+  const playerChip = state.chips[player];
+  if (!playerChip) return null;
+
+  // Supports either:
+  // 1) state.chips[player] = 'match-id'
+  // 2) state.chips[player] = { group: 'match-id', ko: 'match-id' }
+  if (typeof playerChip === 'string') return playerChip;
+
+  const chipStage = match.stage === 'group' ? 'group' : 'ko';
+  return playerChip[chipStage] || null;
+}
+
+function getTeamMatchPoints(team, match, sc) {
+  if (team !== match.home && team !== match.away) return 0;
+
+  const goalsFor = team === match.home ? sc.home : sc.away;
+  const goalsAgainst = team === match.home ? sc.away : sc.home;
+
+  const resultPoints =
+    goalsFor > goalsAgainst ? 3 :
+    goalsFor === goalsAgainst ? 1 :
+    0;
+
+  const scoredPoints = goalsFor;
+  const concededDeduction = goalsAgainst;
+
+  return resultPoints + scoredPoints - concededDeduction;
+}
+
 function computePoints(player, stage) {
-  // Decide which picks to use
+  // Use group picks for group stage, KO picks for knockout stage
   const picks = stage === 'group' ? GROUP_PICKS[player] : KO_PICKS[player];
   if (!picks) return 0;
 
@@ -425,45 +455,40 @@ function computePoints(player, stage) {
   for (const match of MATCH_SCHEDULE) {
     const inStage = stage === 'group'
       ? match.stage === 'group'
-      : ['r32','r16','qf','sf','final'].includes(match.stage);
+      : ['r32', 'r16', 'qf', 'sf', 'final'].includes(match.stage);
+
     if (!inStage) continue;
 
     const sc = getMatchScore(match.id);
     if (!sc) continue;
 
-    const mult = MULTIPLIERS[match.stage] || 1;
+    let matchTotal = 0;
 
     for (const team of myTeams) {
-      let pts = 0;
-      if (team === match.home) {
-        const win = sc.home === sc.away ? 3 : 0;
-        const draw = sc.home === sc.away ? 1 : 0;
-        const clean = sc.away === 0 ? 2 : 0;
-        pts = win + draw + clean;
-      } else if (team === match.away) {
-        const win = sc.away === sc.home ? 3 : 0;
-        const draw = sc.home === sc.away ? 1 : 0;
-        const clean = sc.home === 0 ? 2 : 0;
-        pts = win + draw + clean;
-      } else continue;
-
-      // Super chip check
-      const chipStage = match.stage === 'group' ? 'group' : 'ko';
-      const playerChip = state.chips[player];
-      const chipMatch = playerChip ? playerChip[chipStage] : null;
-      if (chipMatch === match.id) pts *= 2;
-
-      total += pts * mult;
+      matchTotal += getTeamMatchPoints(team, match, sc);
     }
+
+    // Super chip doubles that player's score for this specific match
+    const chipMatch = getPlayerChipMatch(player, match);
+    if (chipMatch === match.id) {
+      matchTotal *= 2;
+    }
+
+    total += matchTotal;
   }
-  return Math.round(total * 10) / 10;
+
+  return total;
 }
 
 function getRankedPlayers(stage) {
   return [...PLAYERS]
-    .map(p => ({ name: p, pts: computePoints(p, stage) }))
+    .map(player => ({
+      name: player,
+      pts: computePoints(player, stage)
+    }))
     .sort((a, b) => b.pts - a.pts);
 }
+
 
 // ── LEADERBOARD ──
 let currentStage = 'group';
