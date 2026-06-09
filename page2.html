@@ -307,15 +307,15 @@ const GROUP_PICKS = {
   "Hariprasad":     { p1: "Brazil",       p2: "Jordan", p3: "Cape Verde" },
   "Harsha":         { p1: "Portugal",     p2: "South Africa", p3: "Tunisia" },
   "Jeetu":          { p1: "Uruguay",      p2: "Sweden", p3: "DR Congo" },
-  "Kireet":         { p1: "Argentina",    p2: "Ivory Coast", p3: "Saudi Arabia" },
+  "Kireet":         { p1: "Argentina",    p2: "Côte d'Ivoire", p3: "Saudi Arabia" },
   "Nikhil":         { p1: "France",       p2: "Canada", p3:"Bosnia and Herzegovina" },
   "Pavan B.P":      { p1: "Spain",        p2: "Uzbekistan", p3: "Switzerland"},
-  "Pavan G.K":      { p1: "Mexico",       p2: "Turkey" , p3: "Japan"},
+  "Pavan G.K":      { p1: "Mexico",       p2: "Türkiye" , p3: "Japan"},
   "Pavan Jami":     { p1: "England",      p2: "Panama", p3: "Paraguay" },
   "Rahul":          { p1: "Croatia",      p2: "Algeria", p3: "Iraq" },
   "Ramya":          { p1: "Colombia",     p2: "Scotland" , p3: "Australia"},
   "Rohan":          { p1: "Senegal",      p2: "Qatar", p3: "Austria" },
-  "Setu":           { p1: "United States",p2: "Egypt",p3: "Curacao"},
+  "Setu":           { p1: "United States",p2: "Egypt",p3: "Curaçao"},
   "Sriram":         { p1: "Morocco",      p2: "Ecuador", p3: "Haiti"},
   "Sushmit":        { p1: "Germany",      p2: "Norway", p3: "Iran"},
   "Vinayak":        { p1: "Belgium",      p2: "Ghana", p3:"Czechia"},
@@ -424,22 +424,44 @@ const MULTIPLIERS = { group:1, r32:1, r16:1, qf:1, sf:1, final:1 };
 
 const MATCH_SCHEDULE = [
   // Group Stage – using 2022 data as template; for 2026 these would be filled in
-  { id:"g1",  stage:"group",  md:1, home:"Mexico",      away:"Poland",      label:"Group B · MD1" },
-  { id:"g2",  stage:"group",  md:1, home:"France",      away:"Australia",   label:"Group D · MD1" },
-  { id:"g3",  stage:"group",  md:1, home:"Argentina",   away:"Saudi Arabia",label:"Group C · MD1" },
-  { id:"g4",  stage:"group",  md:1, home:"Denmark",     away:"Tunisia",     label:"Group D · MD1" },
-  { id:"g5",  stage:"group",  md:1, home:"Germany",     away:"Japan",       label:"Group E · MD1" },
-  { id:"g6",  stage:"group",  md:1, home:"Spain",       away:"Costa Rica",  label:"Group E · MD1" },
-  { id:"g7",  stage:"group",  md:1, home:"Belgium",     away:"Canada",      label:"Group F · MD1" },
-  { id:"g8",  stage:"group",  md:1, home:"Switzerland", away:"Cameroon",    label:"Group G · MD1" },
-  { id:"g9",  stage:"group",  md:1, home:"Uruguay",     away:"Korea Republic",label:"Group H · MD1" },
-  { id:"g10", stage:"group",  md:1, home:"Portugal",    away:"Ghana",       label:"Group H · MD1" },
-  { id:"g11", stage:"group",  md:1, home:"Brazil",      away:"Serbia",      label:"Group G · MD1" },
-  { id:"g12", stage:"group",  md:1, home:"England",     away:"Iran",        label:"Group B · MD1" },
-  { id:"g13", stage:"group",  md:1, home:"Netherlands", away:"Senegal",     label:"Group A · MD1" },
-  { id:"g14", stage:"group",  md:1, home:"United States",away:"Wales",      label:"Group B · MD1" },
-  { id:"g15", stage:"group",  md:1, home:"Australia",   away:"Tunisia",     label:"Group D · MD2" },
-  { id:"g16", stage:"group",  md:1, home:"Croatia",     away:"Morocco",     label:"Group F · MD1" },
+  // MATCHDAY 1
+
+{ id:"1",  stage:"group", md:1, home:"Mexico", away:"South Africa", label:"Group A · MD1" },
+{ id:"2",  stage:"group", md:1, home:"South Korea", away:"Czechia", label:"Group A · MD1" },
+
+{ id:"3",  stage:"group", md:1, home:"Canada", away:"Bosnia and Herzegovina", label:"Group B · MD1" },
+{ id:"4",  stage:"group", md:1, home:"United States", away:"Paraguay", label:"Group D · MD1" },
+
+{ id:"5",  stage:"group", md:1, home:"Haiti", away:"Scotland", label:"Group C · MD1" },
+{ id:"6",  stage:"group", md:1, home:"Australia", away:"Türkiye", label:"Group D · MD1" },
+
+{ id:"7",  stage:"group", md:1, home:"Brazil", away:"Morocco", label:"Group C · MD1" },
+{ id:"8",  stage:"group", md:1, home:"Qatar", away:"Switzerland", label:"Group B · MD1" },
+
+{ id:"9",  stage:"group", md:1, home:"Côte d'Ivoire", away:"Ecuador", label:"Group E · MD1" },
+{ id:"10", stage:"group", md:1, home:"Germany", away:"Curaçao", label:"Group E · MD1" },
+
+{ id:"11", stage:"group", md:1, home:"Netherlands", away:"Japan", label:"Group F · MD1" },
+{ id:"12", stage:"group", md:1, home:"Sweden", away:"Tunisia", label:"Group F · MD1" },
+
+{ id:"13", stage:"group", md:1, home:"Saudi Arabia", away:"Uruguay", label:"Group H · MD1" },
+{ id:"14", stage:"group", md:1, home:"Spain", away:"Cape Verde", label:"Group H · MD1" },
+
+{ id:"15", stage:"group", md:1, home:"Iran", away:"New Zealand", label:"Group G · MD1" },
+{ id:"16", stage:"group", md:1, home:"Belgium", away:"Egypt", label:"Group G · MD1" },
+
+{ id:"17", stage:"group", md:1, home:"France", away:"Senegal", label:"Group I · MD1" },
+{ id:"18", stage:"group", md:1, home:"Iraq", away:"Norway", label:"Group I · MD1" },
+
+{ id:"19", stage:"group", md:1, home:"Argentina", away:"Algeria", label:"Group J · MD1" },
+{ id:"20", stage:"group", md:1, home:"Austria", away:"Jordan", label:"Group J · MD1" },
+
+{ id:"21", stage:"group", md:1, home:"Ghana", away:"Panama", label:"Group L · MD1" },
+{ id:"22", stage:"group", md:1, home:"England", away:"Croatia", label:"Group L · MD1" },
+
+{ id:"23", stage:"group", md:1, home:"Portugal", away:"DR Congo", label:"Group K · MD1" },
+{ id:"24", stage:"group", md:1, home:"Uzbekistan", away:"Colombia", label:"Group K · MD1" },
+ 
   // Knockout template (teams TBD once draw is done)
   { id:"r32_1", stage:"r32",  md:1, home:"TBD",         away:"TBD",         label:"R32 · Match 1" },
   { id:"r32_2", stage:"r32",  md:1, home:"TBD",         away:"TBD",         label:"R32 · Match 2" },
