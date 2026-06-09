@@ -244,6 +244,7 @@
         <th>Player</th>
         <th>P1 Team</th>
         <th>P2 Team</th>
+        <th>P3 Team</th>       
         <th>Progress</th>
         <th>Points</th>
       </tr>
@@ -366,8 +367,8 @@ function flag(team) { return FLAGS[team] || "🏳️"; }
 
 // ── MATCH SCHEDULE (Group Stage + KO template) ──
 // stage: 'group' | 'r32' | 'r16' | 'qf' | 'sf' | 'final'
-// multiplier per new rules: r32=1, r16=1.5, qf=2, sf=3, final=5
-const MULTIPLIERS = { group:1, r32:1, r16:1.5, qf:2, sf:3, final:5 };
+// multiplier per new rules: r32=1, r16=1, qf=1, sf=1, final=1
+const MULTIPLIERS = { group:1, r32:1, r16:1, qf:1, sf:1, final:1 };
 
 const MATCH_SCHEDULE = [
   // Group Stage – using 2022 data as template; for 2026 these would be filled in
@@ -471,7 +472,7 @@ function computePoints(player, stage) {
 
   if (!picks) return 0;
 
-  const selectedTeams = [picks.p1, picks.p2];
+  const selectedTeams = [picks.p1, picks.p2, picks.p3].filter(Boolean);
   let total = 0;
 
   for (const match of MATCH_SCHEDULE) {
@@ -569,8 +570,9 @@ function renderLeaderboard() {
   const tbody = document.getElementById('lb-body');
   tbody.innerHTML = ranked.map((r, i) => {
     const picks = currentStage === 'group' ? GROUP_PICKS[r.name] : KO_PICKS[r.name];
-    const p1 = picks ? (flag(picks.p1) + ' ' + picks.p1) : '—';
-    const p2 = picks ? (flag(picks.p2) + ' ' + picks.p2) : '—';
+    const p1 = picks && picks.p1 ? (flag(picks.p1) + ' ' + picks.p1) : '—';
+    const p2 = picks && picks.p2 ? (flag(picks.p2) + ' ' + picks.p2) : '—';
+    const p3 = picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : '—';
     const ptsClass = r.pts > 0 ? 'pts-pos' : r.pts < 0 ? 'pts-neg' : 'pts-zero';
     const barPct = Math.min(100, (Math.abs(r.pts) / maxPts) * 100);
     const barNeg = r.pts < 0;
@@ -589,6 +591,7 @@ function renderLeaderboard() {
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
+      <td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>
       <td>
         <span class="bar-wrap"><span class="bar-fill${barNeg?' neg':''}" style="width:${barPct}%"></span></span>
       </td>
@@ -596,6 +599,7 @@ function renderLeaderboard() {
     </tr>`;
   }).join('');
 }
+
 
 // ── MATCH ENTRY ──
 function renderMatches() {
@@ -625,13 +629,14 @@ function renderMatches() {
       const saved = state.scores[m.id] !== undefined;
       // find owner(s) of each team
       const homeOwners = PLAYERS.filter(p => {
-        const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
-        return pk && (pk.p1 === m.home || pk.p2 === m.home);
-      }).join(', ');
-      const awayOwners = PLAYERS.filter(p => {
-        const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
-        return pk && (pk.p1 === m.away || pk.p2 === m.away);
-      }).join(', ');
+  const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
+  return pk && (pk.p1 === m.home || pk.p2 === m.home || pk.p3 === m.home);
+}).join(', ');
+const awayOwners = PLAYERS.filter(p => {
+  const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
+  return pk && (pk.p1 === m.away || pk.p2 === m.away || pk.p3 === m.away);
+}).join(', ');
+
 
       html += `<div class="match-card" id="card-${m.id}">
         <div class="match-team-side">
