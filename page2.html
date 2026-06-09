@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WC 2026 Sweepstakes Tracker</title>
- <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -148,14 +148,10 @@
   }
   .round-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .reset-btn {
-    background: #FFFFFF06; border: 1px solid #FFFFFF18; color: var(--muted);
-    font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase; padding: 10px 14px;
-    border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  .multiplier-tag {
+    font-size: 10px; background: var(--gold); color: #000; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px; letter-spacing: 1px;
   }
-  .reset-btn:hover { background: #E74C3C20; border-color: var(--neg); color: var(--neg); }
-  .btn-group { display: flex; gap: 8px; align-items: center; }
 
   /* ── PICKS VIEW ── */
   .picks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
@@ -170,7 +166,7 @@
   .ppc-row .val { color: var(--cream); font-weight: 400; text-align: right; }
   .ppc-row .val.team { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 1px; color: var(--white); }
 
-  /* ── SUPER CHIP PANEL ── */
+  /* ── SUPRE CHIP PANEL ── */
   .chip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
   .chip-card {
     background: var(--ink3); border: 1px solid var(--border);
@@ -220,14 +216,13 @@
 <body>
 
 <div class="topbar">
-  <div class="topbar-logo"> Scorecard <span>2026</span></div>
-    <nav class="tab-nav">
-    <button class="tab-btn" onclick="window.location.href='index.html'"> Home to the Rule Book </button>
+  <div class="topbar-logo">⚽ Sweepstakes <span>2026</span></div>
+  <nav class="tab-nav">
     <button class="tab-btn active" onclick="showTab('leaderboard')">Standings</button>
     <button class="tab-btn" onclick="showTab('scores')">Match Entry</button>
     <button class="tab-btn" onclick="showTab('picks')">Picks</button>
     <button class="tab-btn" onclick="showTab('chips')">Super Chips</button>
-    </nav>
+  </nav>
 </div>
 
 <!-- ══════════════ LEADERBOARD ══════════════ -->
@@ -249,7 +244,6 @@
         <th>Player</th>
         <th>P1 Team</th>
         <th>P2 Team</th>
-        <th>P3 Team</th>
         <th>Progress</th>
         <th>Points</th>
       </tr>
@@ -357,7 +351,7 @@ const PREDICTIONS = {
   "Vinayak":        { boot: "Mbappe",           glove: "Alisson Becker",  winner: "Brazil" },
 };
 
-  // Country flag emoji lookup (subset)
+// Country flag emoji lookup (subset)
 const FLAGS = {
   "England":"ENG","France":"🇫🇷","Spain":"🇪🇸","Germany":"🇩🇪","Brazil":"🇧🇷",
   "Argentina":"🇦🇷","Portugal":"🇵🇹","Netherlands":"🇳🇱","Belgium":"🇧🇪","Denmark":"🇩🇰",
@@ -370,12 +364,11 @@ const FLAGS = {
 };
 function flag(team) { return FLAGS[team] || "🏳️"; }
 
-
 // ── MATCH SCHEDULE (Group Stage + KO template) ──
 // stage: 'group' | 'r32' | 'r16' | 'qf' | 'sf' | 'final'
-// multiplier per new rules: r32=1, r16=1, qf=1, sf=1, final=1
-const MULTIPLIERS = { group:1, r32:1, r16:1, qf:1, sf:1, final:1 };
-  
+// multiplier per new rules: r32=1, r16=1.5, qf=2, sf=3, final=5
+const MULTIPLIERS = { group:1, r32:1, r16:1.5, qf:2, sf:3, final:5 };
+
 const MATCH_SCHEDULE = [
   // Group Stage – using 2022 data as template; for 2026 these would be filled in
   { id:"g1",  stage:"group",  md:1, home:"Mexico",      away:"Poland",      label:"Group B · MD1" },
@@ -406,9 +399,6 @@ const MATCH_SCHEDULE = [
   { id:"final", stage:"final",md:1, home:"TBD",         away:"TBD",         label:"THE FINAL 🏆" },
 ];
 
-
-
-  
 // ── STATE ──
 let state = {
   scores: {},    // { matchId: { home: n, away: n } }
@@ -466,7 +456,7 @@ function computePoints(player, stage) {
   const picks = stage === 'group' ? GROUP_PICKS[player] : KO_PICKS[player];
   if (!picks) return 0;
 
-  const myTeams = [picks.p1, picks.p2, picks.p3].filter(Boolean);
+  const myTeams = [picks.p1, picks.p2];
   let total = 0;
 
   for (const match of MATCH_SCHEDULE) {
@@ -506,7 +496,6 @@ function getRankedPlayers(stage) {
     .sort((a, b) => b.pts - a.pts);
 }
 
-
 // ── LEADERBOARD ──
 let currentStage = 'group';
 
@@ -524,9 +513,8 @@ function renderLeaderboard() {
   const tbody = document.getElementById('lb-body');
   tbody.innerHTML = ranked.map((r, i) => {
     const picks = currentStage === 'group' ? GROUP_PICKS[r.name] : KO_PICKS[r.name];
-    const p1 = picks && picks.p1 ? (flag(picks.p1) + ' ' + picks.p1) : '—';
-    const p2 = picks && picks.p2 ? (flag(picks.p2) + ' ' + picks.p2) : '—';
-    const p3 = picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : '—';
+    const p1 = picks ? (flag(picks.p1) + ' ' + picks.p1) : '—';
+    const p2 = picks ? (flag(picks.p2) + ' ' + picks.p2) : '—';
     const ptsClass = r.pts > 0 ? 'pts-pos' : r.pts < 0 ? 'pts-neg' : 'pts-zero';
     const barPct = Math.min(100, (Math.abs(r.pts) / maxPts) * 100);
     const barNeg = r.pts < 0;
@@ -545,7 +533,6 @@ function renderLeaderboard() {
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
-      <td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>
       <td>
         <span class="bar-wrap"><span class="bar-fill${barNeg?' neg':''}" style="width:${barPct}%"></span></span>
       </td>
@@ -553,7 +540,6 @@ function renderLeaderboard() {
     </tr>`;
   }).join('');
 }
-
 
 // ── MATCH ENTRY ──
 function renderMatches() {
@@ -576,21 +562,20 @@ function renderMatches() {
   for (const [stg, matches] of Object.entries(groups)) {
     if (!matches.length) continue;
     const mult = MULTIPLIERS[stg];
-    html += `<div class="round-label">${stageNames[stg]}</div>`;
+    html += `<div class="round-label">${stageNames[stg]} ${mult > 1 ? `<span class="multiplier-tag">×${mult}</span>` : ''}</div>`;
     html += '<div class="matches-grid">';
     for (const m of matches) {
       const sc = state.scores[m.id] || { home: '', away: '' };
       const saved = state.scores[m.id] !== undefined;
       // find owner(s) of each team
       const homeOwners = PLAYERS.filter(p => {
-  const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
-  return pk && (pk.p1 === m.home || pk.p2 === m.home || pk.p3 === m.home);
-}).join(', ');
-const awayOwners = PLAYERS.filter(p => {
-  const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
-  return pk && (pk.p1 === m.away || pk.p2 === m.away || pk.p3 === m.away);
-}).join(', ');
-
+        const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
+        return pk && (pk.p1 === m.home || pk.p2 === m.home);
+      }).join(', ');
+      const awayOwners = PLAYERS.filter(p => {
+        const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
+        return pk && (pk.p1 === m.away || pk.p2 === m.away);
+      }).join(', ');
 
       html += `<div class="match-card" id="card-${m.id}">
         <div class="match-team-side">
@@ -608,10 +593,7 @@ const awayOwners = PLAYERS.filter(p => {
           <div class="team-name-label">${m.away}</div>
           ${awayOwners ? `<div class="team-owner">👤 ${awayOwners}</div>` : ''}
         </div>
-        <div class="btn-group">
-          <button class="save-btn${saved?' saved':''}" onclick="saveScore('${m.id}')">${saved?'✓ Saved':'Save'}</button>
-          ${saved ? `<button class="reset-btn" onclick="resetScore('${m.id}')">Reset</button>` : ''}
-        </div>
+        <button class="save-btn${saved?' saved':''}" onclick="saveScore('${m.id}')">${saved?'✓ Saved':'Save'}</button>
       </div>`;
     }
     html += '</div>';
@@ -625,29 +607,9 @@ function saveScore(matchId) {
   if (h.value === '' || a.value === '') { showToast('Enter both scores!', '#E74C3C'); return; }
   state.scores[matchId] = { home: parseInt(h.value), away: parseInt(a.value) };
   saveState();
-  // Update button group to show Save (saved state) + Reset
-  const card = document.getElementById('card-' + matchId);
-  const btnGroup = card.querySelector('.btn-group');
-  btnGroup.innerHTML = `
-    <button class="save-btn saved" onclick="saveScore('${matchId}')">✓ Saved</button>
-    <button class="reset-btn" onclick="resetScore('${matchId}')">Reset</button>`;
+  const btn = document.querySelector(`#card-${matchId} .save-btn`);
+  btn.textContent = '✓ Saved'; btn.classList.add('saved');
   showToast('Score saved ✓');
-  renderLeaderboard();
-}
-
-function resetScore(matchId) {
-  delete state.scores[matchId];
-  saveState();
-  // Clear the inputs and revert to unsaved state
-  const h = document.getElementById('h-' + matchId);
-  const a = document.getElementById('a-' + matchId);
-  if (h) { h.value = ''; }
-  if (a) { a.value = ''; }
-  // Revert button group to just Save
-  const card = document.getElementById('card-' + matchId);
-  const btnGroup = card.querySelector('.btn-group');
-  btnGroup.innerHTML = `<button class="save-btn" onclick="saveScore('${matchId}')">Save</button>`;
-  showToast('Score cleared', '#8090A0');
   renderLeaderboard();
 }
 
@@ -658,21 +620,19 @@ function renderPicks() {
     const gp = GROUP_PICKS[p] || {};
     const kp = KO_PICKS[p] || {};
     const pr = PREDICTIONS[p] || {};
-   return `<div class="pick-player-card">
-  <div class="ppc-name">${p}</div>
-  <div class="ppc-row"><span class="label">GS Pick 1</span><span class="val team">${flag(gp.p1||'')} ${gp.p1||'—'}</span></div>
-  <div class="ppc-row"><span class="label">GS Pick 2</span><span class="val team">${flag(gp.p2||'')} ${gp.p2||'—'}</span></div>
-  <div class="ppc-row"><span class="label">GS Pick 3</span><span class="val team">${flag(gp.p3||'')} ${gp.p3||'—'}</span></div>
-  <div class="ppc-row"><span class="label">KO Pick 1</span><span class="val team">${flag(kp.p1||'')} ${kp.p1||'—'}</span></div>
-  <div class="ppc-row"><span class="label">KO Pick 2</span><span class="val team">${flag(kp.p2||'')} ${kp.p2||'—'}</span></div>
-  <div class="ppc-row"><span class="label">KO Pick 3</span><span class="val team">${flag(kp.p3||'')} ${kp.p3||'—'}</span></div>
-  <div class="ppc-row"><span class="label">Golden Boot</span><span class="val">${pr.boot||'—'}</span></div>
-  <div class="ppc-row"><span class="label">Golden Glove</span><span class="val">${pr.glove||'—'}</span></div>
-  <div class="ppc-row"><span class="label">🏆 Winner</span><span class="val" style="color:var(--gold-light)">${flag(pr.winner||'')} ${pr.winner||'—'}</span></div>
-</div>`;
-
+    return `<div class="pick-player-card">
+      <div class="ppc-name">${p}</div>
+      <div class="ppc-row"><span class="label">GS Pick 1</span><span class="val team">${flag(gp.p1||'')} ${gp.p1||'—'}</span></div>
+      <div class="ppc-row"><span class="label">GS Pick 2</span><span class="val team">${flag(gp.p2||'')} ${gp.p2||'—'}</span></div>
+      <div class="ppc-row"><span class="label">KO Pick 1</span><span class="val team">${flag(kp.p1||'')} ${kp.p1||'—'}</span></div>
+      <div class="ppc-row"><span class="label">KO Pick 2</span><span class="val team">${flag(kp.p2||'')} ${kp.p2||'—'}</span></div>
+      <div class="ppc-row"><span class="label">Golden Boot</span><span class="val">${pr.boot||'—'}</span></div>
+      <div class="ppc-row"><span class="label">Golden Glove</span><span class="val">${pr.glove||'—'}</span></div>
+      <div class="ppc-row"><span class="label">🏆 Winner</span><span class="val" style="color:var(--gold-light)">${flag(pr.winner||'')} ${pr.winner||'—'}</span></div>
+    </div>`;
+  }).join('');
 }
- 
+
 // ── SUPER CHIPS ──
 function renderChips() {
   const container = document.getElementById('chips-container');
