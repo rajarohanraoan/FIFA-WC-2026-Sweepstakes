@@ -436,12 +436,12 @@ function computePoints(player, stage) {
     for (const team of myTeams) {
       let pts = 0;
       if (team === match.home) {
-        const win = sc.home > sc.away ? 3 : 0;
+        const win = sc.home === sc.away ? 3 : 0;
         const draw = sc.home === sc.away ? 1 : 0;
         const clean = sc.away === 0 ? 2 : 0;
         pts = win + draw + clean;
       } else if (team === match.away) {
-        const win = sc.away > sc.home ? 3 : 0;
+        const win = sc.away === sc.home ? 3 : 0;
         const draw = sc.home === sc.away ? 1 : 0;
         const clean = sc.home === 0 ? 2 : 0;
         pts = win + draw + clean;
