@@ -363,16 +363,59 @@ const PREDICTIONS = {
 
 // Country flag emoji lookup (subset)
 const FLAGS = {
-  "England":"ENG","France":"🇫🇷","Spain":"🇪🇸","Germany":"🇩🇪","Brazil":"🇧🇷",
-  "Argentina":"🇦🇷","Portugal":"🇵🇹","Netherlands":"🇳🇱","Belgium":"🇧🇪","Denmark":"🇩🇰",
-  "Croatia":"🇭🇷","Uruguay":"🇺🇾","Mexico":"🇲🇽","Senegal":"🇸🇳","Switzerland":"🇨🇭",
-  "United States":"🇺🇸","Poland":"🇵🇱","Morocco":"🇲🇦","Japan":"🇯🇵","Korea Republic":"🇰🇷",
-  "Australia":"🇦🇺","Canada":"🇨🇦","Ghana":"🇬🇭","Wales":"WAL","Ecuador":"🇪🇨",
-  "Costa Rica":"🇨🇷","Tunisia":"🇹🇳","Cameroon":"🇨🇲","Saudi Arabia":"🇸🇦","Iran":"🇮🇷",
-  "Serbia":"🇷🇸","Qatar":"🇶🇦","Bolivia":"🇧🇴","Panama":"🇵🇦","Guatemala":"🇬🇹",
-  "USA":"🇺🇸","Netherlands":"🇳🇱"
+  "France":"🇫🇷",
+  "Spain":"🇪🇸",
+  "Argentina":"🇦🇷",
+  "England":"🏴",
+  "Portugal":"🇵🇹",
+  "Brazil":"🇧🇷",
+  "Netherlands":"🇳🇱",
+  "Morocco":"🇲🇦",
+  "Belgium":"🇧🇪",
+  "Germany":"🇩🇪",
+  "Croatia":"🇭🇷",
+  "Colombia":"🇨🇴",
+  "Senegal":"🇸🇳",
+  "Mexico":"🇲🇽",
+  "United States":"🇺🇸",
+  "Uruguay":"🇺🇾",
+  "Japan":"🇯🇵",
+  "Switzerland":"🇨🇭",
+  "Iran":"🇮🇷",
+  "Türkiye":"🇹🇷",
+  "Ecuador":"🇪🇨",
+  "Austria":"🇦🇹",
+  "South Korea":"🇰🇷",
+  "Australia":"🇦🇺",
+  "Algeria":"🇩🇿",
+  "Egypt":"🇪🇬",
+  "Canada":"🇨🇦",
+  "Norway":"🇳🇴",
+  "Panama":"🇵🇦",
+  "Côte d'Ivoire":"🇨🇮",
+  "Sweden":"🇸🇪",
+  "Paraguay":"🇵🇾",
+  "Czechia":"🇨🇿",
+  "Scotland":"🏴",
+  "Tunisia":"🇹🇳",
+  "DR Congo":"🇨🇩",
+  "Uzbekistan":"🇺🇿",
+  "Qatar":"🇶🇦",
+  "Iraq":"🇮🇶",
+  "South Africa":"🇿🇦",
+  "Saudi Arabia":"🇸🇦",
+  "Jordan":"🇯🇴",
+  "Bosnia and Herzegovina":"🇧🇦",
+  "Cape Verde":"🇨🇻",
+  "Ghana":"🇬🇭",
+  "Curaçao":"🇨🇼",
+  "Haiti":"🇭🇹",
+  "New Zealand":"🇳🇿"
 };
-function flag(team) { return FLAGS[team] || "🏳️"; }
+
+function flag(team) {
+  return FLAGS[team] || "🏳️";
+}
 
 // ── MATCH SCHEDULE (Group Stage + KO template) ──
 // stage: 'group' | 'r32' | 'r16' | 'qf' | 'sf' | 'final'
