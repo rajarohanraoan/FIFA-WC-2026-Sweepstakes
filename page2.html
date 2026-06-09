@@ -375,8 +375,7 @@ function flag(team) { return FLAGS[team] || "🏳️"; }
 // stage: 'group' | 'r32' | 'r16' | 'qf' | 'sf' | 'final'
 // multiplier per new rules: r32=1, r16=1, qf=1, sf=1, final=1
 const MULTIPLIERS = { group:1, r32:1, r16:1, qf:1, sf:1, final:1 };
-
-
+  
 const MATCH_SCHEDULE = [
   // Group Stage – using 2022 data as template; for 2026 these would be filled in
   { id:"g1",  stage:"group",  md:1, home:"Mexico",      away:"Poland",      label:"Group B · MD1" },
@@ -406,6 +405,9 @@ const MATCH_SCHEDULE = [
   { id:"sf_2",  stage:"sf",   md:1, home:"TBD",         away:"TBD",         label:"Semi Final 2" },
   { id:"final", stage:"final",md:1, home:"TBD",         away:"TBD",         label:"THE FINAL 🏆" },
 ];
+
+
+
   
 // ── STATE ──
 let state = {
