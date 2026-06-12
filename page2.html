@@ -571,7 +571,13 @@ function saveState() {
 // ─────────────────────────────────────────────
 
 function getMatchScore(matchId) {
+
+  if (!state || !state.scores) {
+    return null;
+  }
+
   return state.scores[matchId] || null;
+
 }
 
 function calculateTeamPoints(goalsFor, goalsAgainst) {
