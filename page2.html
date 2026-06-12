@@ -484,7 +484,7 @@ const MATCH_SCHEDULE = [
 let state = {
   scores: {},    // { matchId: { home: n, away: n } }
   chips: {},     // { player: { group: matchId|null, ko: matchId|null } }
-  currentStage: 'group',
+  currentStage: data.currentStage || 'group',
 };
 
 // ── FIREBASE CONFIG ──
@@ -802,9 +802,9 @@ const awayOwners = PLAYERS.filter(p => {
           ${homeOwners ? `<div class="team-owner">👤 ${homeOwners}</div>` : ''}
         </div>
         <div class="score-inputs">
-          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
+          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–" >
           <span class="score-sep">:</span>
-          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
+          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–" >
         </div>
         <div class="match-team-side right">
           <div class="team-flag">${flag(m.away)}</div>
@@ -894,13 +894,13 @@ function renderChips() {
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
         <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
+        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" >
           ${matchOpts(groupMatches,'g')}
         </select>
       </div>
       <div class="chip-slot">
         <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
+        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" >
           ${matchOpts(koMatches,'k')}
         </select>
       </div>
@@ -944,6 +944,8 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔒';
     document.getElementById('admin-lock').style.opacity = '0.08';
     renderTabNav();
+    renderMatches();
+    renderChips();
     activateTab('leaderboard');
     return;
   }
@@ -955,6 +957,8 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔓';
     document.getElementById('admin-lock').style.opacity = '0.55';
     renderTabNav();
+    renderMatches();
+    renderChips();
     activateTab('scores');
     showToast('Admin mode on ✓');
   } else {
