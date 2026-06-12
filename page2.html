@@ -517,6 +517,7 @@ function initFirebase() {
         // First time — push blank state
         stateRef.set(state);
       }
+     console.log("STATE", state);
       renderLeaderboard();
       renderMatches();
       renderChips();
