@@ -484,7 +484,7 @@ const MATCH_SCHEDULE = [
 let state = {
   scores: {},    // { matchId: { home: n, away: n } }
   chips: {},     // { player: { group: matchId|null, ko: matchId|null } }
-  currentStage: data.currentStage || 'group',
+  currentStage: 'group',
 };
 
 // ── FIREBASE CONFIG ──
@@ -512,22 +512,11 @@ function initFirebase() {
     stateRef.on('value', snap => {
       const data = snap.val();
       if (data) {
-
-  state = {
-    scores: data.scores || {},
-    chips: data.chips || {},
-    currentStage: 'group'
-  };
-
-} else {
-
-  stateRef.set({
-    scores: {},
-    chips: {}
-  });
-
-}
-     console.log("STATE", state);
+        state = data;
+      } else {
+        // First time — push blank state
+        stateRef.set(state);
+      }
       renderLeaderboard();
       renderMatches();
       renderChips();
@@ -582,15 +571,6 @@ function saveState() {
 // ─────────────────────────────────────────────
 
 function getMatchScore(matchId) {
-
-  if (
-    !state ||
-    !state.scores ||
-    typeof state.scores !== 'object'
-  ) {
-    return null;
-  }
-
   return state.scores[matchId] || null;
 }
 
@@ -802,9 +782,9 @@ const awayOwners = PLAYERS.filter(p => {
           ${homeOwners ? `<div class="team-owner">👤 ${homeOwners}</div>` : ''}
         </div>
         <div class="score-inputs">
-          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–" >
+          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
           <span class="score-sep">:</span>
-          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–" >
+          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
         </div>
         <div class="match-team-side right">
           <div class="team-flag">${flag(m.away)}</div>
@@ -894,13 +874,13 @@ function renderChips() {
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
         <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" >
+        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(groupMatches,'g')}
         </select>
       </div>
       <div class="chip-slot">
         <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" >
+        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(koMatches,'k')}
         </select>
       </div>
@@ -944,8 +924,6 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔒';
     document.getElementById('admin-lock').style.opacity = '0.08';
     renderTabNav();
-    renderMatches();
-    renderChips();
     activateTab('leaderboard');
     return;
   }
@@ -957,8 +935,6 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔓';
     document.getElementById('admin-lock').style.opacity = '0.55';
     renderTabNav();
-    renderMatches();
-    renderChips();
     activateTab('scores');
     showToast('Admin mode on ✓');
   } else {
