@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WC 2026 Sweepstakes Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
-<style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+ <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --gold: #D4A017; --gold-light: #F0C040; --green: #1A472A;
@@ -233,6 +235,10 @@
     <button class="tab-btn" onclick="showTab('picks')">Picks</button>
     <button class="tab-btn" onclick="showTab('chips')">Super Chips</button>
   </nav>
+ <div style="display:flex;align-items:center;gap:6px">
+  <span id="conn-dot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:all 0.3s"></span>
+  <span id="conn-label" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Connecting…</span>
+</div>
 </div>
 
 <!-- ══════════════ LEADERBOARD ══════════════ -->
@@ -482,14 +488,70 @@ let state = {
   currentStage: 'group',
 };
 
-function loadState() {
+// ── FIREBASE CONFIG ──
+// Paste your Firebase config here after creating a project
+const firebaseConfig = {
+  apiKey: "AIzaSyADUAFFZDYffBiVFVW8xr234k96vzMosiY",
+  authDomain: "wc-sweepstakes-2026.firebaseapp.com",
+  databaseURL: "https://wc-sweepstakes-2026-default-rtdb.firebaseio.com",
+  projectId: "wc-sweepstakes-2026",
+  storageBucket: "wc-sweepstakes-2026.firebasestorage.app",
+  messagingSenderId: "8070966174",
+  appId: "1:8070966174:web:1e045b49a9b3241daf048f"
+};
+
+let db = null;
+let stateRef = null;
+
+function initFirebase() {
   try {
-    const s = localStorage.getItem('wc26_state');
-    if (s) state = JSON.parse(s);
-  } catch(e) {}
+    const app = firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database(app);
+    stateRef = db.ref('wc26_state');
+
+    // Listen for any change and re-render everything live
+    stateRef.on('value', snap => {
+      const data = snap.val();
+      if (data) {
+        state = data;
+      } else {
+        // First time — push blank state
+        stateRef.set(state);
+      }
+      renderLeaderboard();
+      renderMatches();
+      renderChips();
+    });
+
+    // Connection indicator
+    db.ref('.info/connected').on('value', snap => {
+      const dot = document.getElementById('conn-dot');
+      const lbl = document.getElementById('conn-label');
+      if (snap.val()) {
+        dot.style.background = 'var(--pos)';
+        dot.style.boxShadow = '0 0 6px var(--pos)';
+        lbl.textContent = 'Live';
+        lbl.style.color = 'var(--pos)';
+      } else {
+        dot.style.background = 'var(--neg)';
+        dot.style.boxShadow = 'none';
+        lbl.textContent = 'Offline';
+        lbl.style.color = 'var(--neg)';
+      }
+    });
+  } catch(e) {
+    console.error('Firebase init failed:', e);
+  }
 }
+
+function loadState() {
+  // No-op — Firebase listener handles this
+}
+
 function saveState() {
-  try { localStorage.setItem('wc26_state', JSON.stringify(state)); } catch(e){}
+  if (stateRef) {
+    stateRef.set(state).catch(e => console.error('Save failed:', e));
+  }
 }
 
 // ── SCORING ENGINE ──
@@ -859,11 +921,8 @@ function showToast(msg, color) {
 }
 
 // ── INIT ──
-loadState();
-renderLeaderboard();
-renderMatches();
-renderPicks();
-renderChips();
+initFirebase();
+renderPicks(); // static data, no Firebase needed
 </script>
 </body>
 </html>
