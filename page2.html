@@ -230,8 +230,8 @@
   <div class="topbar-logo">SWEEPSTAKES SCORECARD <span>2026</span></div>
   <nav class="tab-nav" id="tab-nav">
     <a href="index.html" class="tab-btn">Back to Rules</a>
-    <button class="tab-btn active" data-tab="leaderboard" onclick="showTab('leaderboard')">Standings</button>
-    <button class="tab-btn" data-tab="picks" onclick="showTab('picks')">Picks</button>
+    <button class="tab-btn active" onclick="showTab('leaderboard', this)">Standings</button>
+    <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>
   </nav>
   <div style="display:flex;align-items:center;gap:6px">
     <span id="conn-dot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:all 0.3s"></span>
@@ -906,8 +906,8 @@ function saveChip(player, type, matchId) {
 // ── ADMIN AUTH ──
 const ADMIN_HASH = '30c1873ce6a93ff1ff4167e67af53e66ed35c369ea50ed4986ad8870f922d5d4';
 // Default password: wc2026admin
-// To change: in browser console run:
-// crypto.subtle.digest('SHA-256',new TextEncoder().encode('newpassword')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+// To change: open browser console and run:
+// crypto.subtle.digest('SHA-256',new TextEncoder().encode('newpwd')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
 
 let isAdmin = false;
 
@@ -922,7 +922,7 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔒';
     document.getElementById('admin-lock').style.opacity = '0.08';
     renderTabNav();
-    showTab('leaderboard');
+    activateTab('leaderboard');
     return;
   }
   const pwd = prompt('Admin password:');
@@ -933,7 +933,7 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔓';
     document.getElementById('admin-lock').style.opacity = '0.55';
     renderTabNav();
-    showTab('scores');
+    activateTab('scores');
     showToast('Admin mode on ✓');
   } else {
     showToast('Wrong password', '#E74C3C');
@@ -942,31 +942,24 @@ async function toggleAdmin() {
 
 function renderTabNav() {
   const nav = document.getElementById('tab-nav');
-  if (isAdmin) {
-    nav.innerHTML = `
-      <a href="index.html" class="tab-btn">Back to Rules</a>
-      <button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">Standings</button>
-      <button class="tab-btn" data-tab="scores" onclick="showTab('scores')">Match Entry</button>
-      <button class="tab-btn" data-tab="picks" onclick="showTab('picks')">Picks</button>
-      <button class="tab-btn" data-tab="chips" onclick="showTab('chips')">Super Chips</button>`;
-  } else {
-    nav.innerHTML = `
-      <a href="index.html" class="tab-btn">Back to Rules</a>
-      <button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">Standings</button>
-      <button class="tab-btn" data-tab="picks" onclick="showTab('picks')">Picks</button>`;
-  }
+  const backLink = '<a href="index.html" class="tab-btn">Back to Rules</a>';
+  const lbBtn    = '<button class="tab-btn" id="nav-leaderboard" onclick="activateTab(\'leaderboard\')">Standings</button>';
+  const scBtn    = '<button class="tab-btn" id="nav-scores"      onclick="activateTab(\'scores\')">Match Entry</button>';
+  const pkBtn    = '<button class="tab-btn" id="nav-picks"       onclick="activateTab(\'picks\')">Picks</button>';
+  const chBtn    = '<button class="tab-btn" id="nav-chips"       onclick="activateTab(\'chips\')">Super Chips</button>';
+  nav.innerHTML  = isAdmin
+    ? backLink + lbBtn + scBtn + pkBtn + chBtn
+    : backLink + lbBtn + pkBtn;
 }
 
-// ── TABS ──
-function showTab(id) {
-  const adminOnly = ['scores', 'chips'];
-  if (adminOnly.includes(id) && !isAdmin) return;
+function activateTab(id) {
+  if ((id === 'scores' || id === 'chips') && !isAdmin) return;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  // Highlight the matching nav button by its data-tab attribute
-  const activeBtn = document.querySelector(`#tab-nav button[data-tab="${id}"]`);
-  if (activeBtn) activeBtn.classList.add('active');
+  const page = document.getElementById('tab-' + id);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('#tab-nav .tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('nav-' + id);
+  if (btn) btn.classList.add('active');
 }
 
 // ── TOAST ──
@@ -980,7 +973,7 @@ function showToast(msg, color) {
 
 // ── INIT ──
 renderTabNav();
-showTab('leaderboard');
+activateTab('leaderboard');
 renderPicks();
 initFirebase();
 </script>
