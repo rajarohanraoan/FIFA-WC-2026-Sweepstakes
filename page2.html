@@ -230,8 +230,8 @@
   <div class="topbar-logo">SWEEPSTAKES SCORECARD <span>2026</span></div>
   <nav class="tab-nav" id="tab-nav">
     <a href="index.html" class="tab-btn">Back to Rules</a>
-    <button class="tab-btn active" onclick="showTab('leaderboard', this)">Standings</button>
-    <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>
+    <button class="tab-btn active" data-tab="leaderboard" onclick="showTab('leaderboard')">Standings</button>
+    <button class="tab-btn" data-tab="picks" onclick="showTab('picks')">Picks</button>
   </nav>
   <div style="display:flex;align-items:center;gap:6px">
     <span id="conn-dot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:all 0.3s"></span>
@@ -922,9 +922,7 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔒';
     document.getElementById('admin-lock').style.opacity = '0.08';
     renderTabNav();
-    // Switch back to leaderboard after renderTabNav has painted the new buttons
-    const lbBtn = document.querySelector('#tab-nav button');
-    if (lbBtn) showTab('leaderboard', lbBtn);
+    showTab('leaderboard');
     return;
   }
   const pwd = prompt('Admin password:');
@@ -935,9 +933,7 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔓';
     document.getElementById('admin-lock').style.opacity = '0.55';
     renderTabNav();
-    // Auto-open Match Entry so admin lands straight on it
-    const scoresBtn = document.querySelector('#tab-nav button[onclick*="scores"]');
-    if (scoresBtn) showTab('scores', scoresBtn);
+    showTab('scores');
     showToast('Admin mode on ✓');
   } else {
     showToast('Wrong password', '#E74C3C');
@@ -949,26 +945,28 @@ function renderTabNav() {
   if (isAdmin) {
     nav.innerHTML = `
       <a href="index.html" class="tab-btn">Back to Rules</a>
-      <button class="tab-btn" onclick="showTab('leaderboard', this)">Standings</button>
-      <button class="tab-btn" onclick="showTab('scores', this)">Match Entry</button>
-      <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>
-      <button class="tab-btn" onclick="showTab('chips', this)">Super Chips</button>`;
+      <button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">Standings</button>
+      <button class="tab-btn" data-tab="scores" onclick="showTab('scores')">Match Entry</button>
+      <button class="tab-btn" data-tab="picks" onclick="showTab('picks')">Picks</button>
+      <button class="tab-btn" data-tab="chips" onclick="showTab('chips')">Super Chips</button>`;
   } else {
     nav.innerHTML = `
       <a href="index.html" class="tab-btn">Back to Rules</a>
-      <button class="tab-btn" onclick="showTab('leaderboard', this)">Standings</button>
-      <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>`;
+      <button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">Standings</button>
+      <button class="tab-btn" data-tab="picks" onclick="showTab('picks')">Picks</button>`;
   }
 }
 
 // ── TABS ──
-function showTab(id, btn) {
+function showTab(id) {
   const adminOnly = ['scores', 'chips'];
   if (adminOnly.includes(id) && !isAdmin) return;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-  if (btn) btn.classList.add('active');
+  // Highlight the matching nav button by its data-tab attribute
+  const activeBtn = document.querySelector(`#tab-nav button[data-tab="${id}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
 }
 
 // ── TOAST ──
@@ -982,9 +980,7 @@ function showToast(msg, color) {
 
 // ── INIT ──
 renderTabNav();
-// Set Standings as active on first load
-const initBtn = document.querySelector('#tab-nav button');
-if (initBtn) initBtn.classList.add('active');
+showTab('leaderboard');
 renderPicks();
 initFirebase();
 </script>
