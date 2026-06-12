@@ -922,7 +922,9 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔒';
     document.getElementById('admin-lock').style.opacity = '0.08';
     renderTabNav();
-    showTab('leaderboard');
+    // Switch back to leaderboard after renderTabNav has painted the new buttons
+    const lbBtn = document.querySelector('#tab-nav button');
+    if (lbBtn) showTab('leaderboard', lbBtn);
     return;
   }
   const pwd = prompt('Admin password:');
@@ -933,6 +935,9 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔓';
     document.getElementById('admin-lock').style.opacity = '0.55';
     renderTabNav();
+    // Auto-open Match Entry so admin lands straight on it
+    const scoresBtn = document.querySelector('#tab-nav button[onclick*="scores"]');
+    if (scoresBtn) showTab('scores', scoresBtn);
     showToast('Admin mode on ✓');
   } else {
     showToast('Wrong password', '#E74C3C');
@@ -944,14 +949,14 @@ function renderTabNav() {
   if (isAdmin) {
     nav.innerHTML = `
       <a href="index.html" class="tab-btn">Back to Rules</a>
-      <button class="tab-btn active" onclick="showTab('leaderboard', this)">Standings</button>
+      <button class="tab-btn" onclick="showTab('leaderboard', this)">Standings</button>
       <button class="tab-btn" onclick="showTab('scores', this)">Match Entry</button>
       <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>
       <button class="tab-btn" onclick="showTab('chips', this)">Super Chips</button>`;
   } else {
     nav.innerHTML = `
       <a href="index.html" class="tab-btn">Back to Rules</a>
-      <button class="tab-btn active" onclick="showTab('leaderboard', this)">Standings</button>
+      <button class="tab-btn" onclick="showTab('leaderboard', this)">Standings</button>
       <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>`;
   }
 }
@@ -977,6 +982,9 @@ function showToast(msg, color) {
 
 // ── INIT ──
 renderTabNav();
+// Set Standings as active on first load
+const initBtn = document.querySelector('#tab-nav button');
+if (initBtn) initBtn.classList.add('active');
 renderPicks();
 initFirebase();
 </script>
