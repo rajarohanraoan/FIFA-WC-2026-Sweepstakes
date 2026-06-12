@@ -782,9 +782,9 @@ const awayOwners = PLAYERS.filter(p => {
           ${homeOwners ? `<div class="team-owner">👤 ${homeOwners}</div>` : ''}
         </div>
         <div class="score-inputs">
-          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–">
+          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
           <span class="score-sep">:</span>
-          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–">
+          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
         </div>
         <div class="match-team-side right">
           <div class="team-flag">${flag(m.away)}</div>
@@ -792,8 +792,10 @@ const awayOwners = PLAYERS.filter(p => {
           ${awayOwners ? `<div class="team-owner">👤 ${awayOwners}</div>` : ''}
         </div>
        <div class="btn-group">
+          ${isAdmin ? `
           <button class="save-btn${saved?' saved':''}" onclick="saveScore('${m.id}')">${saved?'✓ Saved':'Save'}</button>
           ${saved ? `<button class="reset-btn" onclick="resetScore('${m.id}')">Reset</button>` : ''}
+          ` : ''}
         </div>
       </div>`;
     }
@@ -872,13 +874,13 @@ function renderChips() {
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
         <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)">
+        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(groupMatches,'g')}
         </select>
       </div>
       <div class="chip-slot">
         <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)">
+        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(koMatches,'k')}
         </select>
       </div>
@@ -947,13 +949,11 @@ function renderTabNav() {
   const scBtn    = '<button class="tab-btn" id="nav-scores"      onclick="activateTab(\'scores\')">Match Entry</button>';
   const pkBtn    = '<button class="tab-btn" id="nav-picks"       onclick="activateTab(\'picks\')">Picks</button>';
   const chBtn    = '<button class="tab-btn" id="nav-chips"       onclick="activateTab(\'chips\')">Super Chips</button>';
-  nav.innerHTML  = isAdmin
-    ? backLink + lbBtn + scBtn + pkBtn + chBtn
-    : backLink + lbBtn + pkBtn;
+  nav.innerHTML = backLink + lbBtn + scBtn + pkBtn + chBtn;
 }
 
 function activateTab(id) {
-  if ((id === 'scores' || id === 'chips') && !isAdmin) return;
+  
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById('tab-' + id);
   if (page) page.classList.add('active');
