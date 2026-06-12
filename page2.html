@@ -571,13 +571,7 @@ function saveState() {
 // ─────────────────────────────────────────────
 
 function getMatchScore(matchId) {
-
-  if (!state || !state.scores) {
-    return null;
-  }
-
   return state.scores[matchId] || null;
-
 }
 
 function calculateTeamPoints(goalsFor, goalsAgainst) {
@@ -788,9 +782,9 @@ const awayOwners = PLAYERS.filter(p => {
           ${homeOwners ? `<div class="team-owner">👤 ${homeOwners}</div>` : ''}
         </div>
         <div class="score-inputs">
-          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
+          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–">
           <span class="score-sep">:</span>
-          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
+          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–">
         </div>
         <div class="match-team-side right">
           <div class="team-flag">${flag(m.away)}</div>
@@ -798,10 +792,8 @@ const awayOwners = PLAYERS.filter(p => {
           ${awayOwners ? `<div class="team-owner">👤 ${awayOwners}</div>` : ''}
         </div>
        <div class="btn-group">
-          ${isAdmin ? `
           <button class="save-btn${saved?' saved':''}" onclick="saveScore('${m.id}')">${saved?'✓ Saved':'Save'}</button>
           ${saved ? `<button class="reset-btn" onclick="resetScore('${m.id}')">Reset</button>` : ''}
-          ` : ''}
         </div>
       </div>`;
     }
@@ -880,13 +872,13 @@ function renderChips() {
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
         <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
+        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)">
           ${matchOpts(groupMatches,'g')}
         </select>
       </div>
       <div class="chip-slot">
         <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
+        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)">
           ${matchOpts(koMatches,'k')}
         </select>
       </div>
@@ -914,8 +906,8 @@ function saveChip(player, type, matchId) {
 // ── ADMIN AUTH ──
 const ADMIN_HASH = '30c1873ce6a93ff1ff4167e67af53e66ed35c369ea50ed4986ad8870f922d5d4';
 // Default password: wc2026admin
-// To change: open browser console and run:
-// crypto.subtle.digest('SHA-256',new TextEncoder().encode('newpwd')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+// To change: in browser console run:
+// crypto.subtle.digest('SHA-256',new TextEncoder().encode('newpassword')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
 
 let isAdmin = false;
 
@@ -930,7 +922,9 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔒';
     document.getElementById('admin-lock').style.opacity = '0.08';
     renderTabNav();
-    activateTab('leaderboard');
+    // Switch back to leaderboard after renderTabNav has painted the new buttons
+    const lbBtn = document.querySelector('#tab-nav button');
+    if (lbBtn) showTab('leaderboard', lbBtn);
     return;
   }
   const pwd = prompt('Admin password:');
@@ -941,7 +935,9 @@ async function toggleAdmin() {
     document.getElementById('admin-lock').textContent = '🔓';
     document.getElementById('admin-lock').style.opacity = '0.55';
     renderTabNav();
-    activateTab('scores');
+    // Auto-open Match Entry so admin lands straight on it
+    const scoresBtn = document.querySelector('#tab-nav button[onclick*="scores"]');
+    if (scoresBtn) showTab('scores', scoresBtn);
     showToast('Admin mode on ✓');
   } else {
     showToast('Wrong password', '#E74C3C');
@@ -950,21 +946,28 @@ async function toggleAdmin() {
 
 function renderTabNav() {
   const nav = document.getElementById('tab-nav');
-  const backLink = '<a href="index.html" class="tab-btn">Back to Rules</a>';
-  const lbBtn    = '<button class="tab-btn" id="nav-leaderboard" onclick="activateTab(\'leaderboard\')">Standings</button>';
-  const scBtn    = '<button class="tab-btn" id="nav-scores"      onclick="activateTab(\'scores\')">Match Entry</button>';
-  const pkBtn    = '<button class="tab-btn" id="nav-picks"       onclick="activateTab(\'picks\')">Picks</button>';
-  const chBtn    = '<button class="tab-btn" id="nav-chips"       onclick="activateTab(\'chips\')">Super Chips</button>';
-  nav.innerHTML = backLink + lbBtn + scBtn + pkBtn + chBtn;
+  if (isAdmin) {
+    nav.innerHTML = `
+      <a href="index.html" class="tab-btn">Back to Rules</a>
+      <button class="tab-btn" onclick="showTab('leaderboard', this)">Standings</button>
+      <button class="tab-btn" onclick="showTab('scores', this)">Match Entry</button>
+      <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>
+      <button class="tab-btn" onclick="showTab('chips', this)">Super Chips</button>`;
+  } else {
+    nav.innerHTML = `
+      <a href="index.html" class="tab-btn">Back to Rules</a>
+      <button class="tab-btn" onclick="showTab('leaderboard', this)">Standings</button>
+      <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>`;
+  }
 }
 
-function activateTab(id) {
-  
+// ── TABS ──
+function showTab(id, btn) {
+  const adminOnly = ['scores', 'chips'];
+  if (adminOnly.includes(id) && !isAdmin) return;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const page = document.getElementById('tab-' + id);
-  if (page) page.classList.add('active');
-  document.querySelectorAll('#tab-nav .tab-btn').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById('nav-' + id);
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
 }
 
@@ -979,7 +982,9 @@ function showToast(msg, color) {
 
 // ── INIT ──
 renderTabNav();
-activateTab('leaderboard');
+// Set Standings as active on first load
+const initBtn = document.querySelector('#tab-nav button');
+if (initBtn) initBtn.classList.add('active');
 renderPicks();
 initFirebase();
 </script>
