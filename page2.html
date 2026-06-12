@@ -512,11 +512,21 @@ function initFirebase() {
     stateRef.on('value', snap => {
       const data = snap.val();
       if (data) {
-        state = data;
-      } else {
-        // First time — push blank state
-        stateRef.set(state);
-      }
+
+  state = {
+    scores: data.scores || {},
+    chips: data.chips || {},
+    currentStage: 'group'
+  };
+
+} else {
+
+  stateRef.set({
+    scores: {},
+    chips: {}
+  });
+
+}
      console.log("STATE", state);
       renderLeaderboard();
       renderMatches();
@@ -572,6 +582,15 @@ function saveState() {
 // ─────────────────────────────────────────────
 
 function getMatchScore(matchId) {
+
+  if (
+    !state ||
+    !state.scores ||
+    typeof state.scores !== 'object'
+  ) {
+    return null;
+  }
+
   return state.scores[matchId] || null;
 }
 
