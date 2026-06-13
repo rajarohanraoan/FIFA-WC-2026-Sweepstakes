@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WC 2026 Sweepstakes Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
-<style>
+ <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --gold: #D4A017; --gold-light: #F0C040; --green: #1A472A;
@@ -226,14 +226,17 @@
 
 <div class="topbar">
   <div class="topbar-logo">SWEEPSTAKES SCORECARD <span>2026</span></div>
-  <nav class="tab-nav">
-     <a href="index.html" class="tab-btn" onclick="showTab('rules')">Back to Rules </a>
-   <button class="tab-btn active" onclick="showTab('leaderboard')">Standings</button>  
-     <button class="tab-btn" onclick="showTab('scores')">Match Entry</button>
-    <button class="tab-btn" onclick="showTab('picks')">Picks</button>
-    <button class="tab-btn" onclick="showTab('chips')">Super Chips</button>
+  <nav class="tab-nav" id="tab-nav">
+    <a href="index.html" class="tab-btn">Back to Rules</a>
+    <button class="tab-btn active" onclick="showTab('leaderboard', this)">Standings</button>
+    <button class="tab-btn" onclick="showTab('picks', this)">Picks</button>
   </nav>
+  <div style="display:flex;align-items:center;gap:6px">
+    <span id="conn-dot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:all 0.3s"></span>
+    <span id="conn-label" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Connecting…</span>
+  </div>
 </div>
+<div id="admin-lock" onclick="toggleAdmin()" style="position:fixed;bottom:20px;right:20px;font-size:16px;opacity:0.08;cursor:pointer;transition:opacity 0.2s;z-index:200;user-select:none" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity=isAdmin?'0.55':'0.08'">🔒</div>
 
 <!-- ══════════════ LEADERBOARD ══════════════ -->
 <div id="tab-leaderboard" class="page active">
@@ -292,6 +295,8 @@
 
 <div class="toast" id="toast">✓ Saved</div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
 // ══════════════════════════════════════════
 //  DATA — based on 2022 sheet, ready for 2026
@@ -482,14 +487,82 @@ let state = {
   currentStage: 'group',
 };
 
-function loadState() {
+// ── FIREBASE CONFIG ──
+// Paste your Firebase config here after creating a project
+const firebaseConfig = {
+  apiKey: "AIzaSyADUAFFZDYffBiVFVW8xr234k96vzMosiY",
+  authDomain: "wc-sweepstakes-2026.firebaseapp.com",
+  databaseURL: "https://wc-sweepstakes-2026-default-rtdb.firebaseio.com",
+  projectId: "wc-sweepstakes-2026",
+  storageBucket: "wc-sweepstakes-2026.firebasestorage.app",
+  messagingSenderId: "8070966174",
+  appId: "1:8070966174:web:1e045b49a9b3241daf048f"
+};
+
+let db = null;
+let stateRef = null;
+
+function initFirebase() {
   try {
-    const s = localStorage.getItem('wc26_state');
-    if (s) state = JSON.parse(s);
-  } catch(e) {}
+    const app = firebase.initializeApp(firebaseConfig);
+    db = firebase.database(app);
+    stateRef = db.ref('wc26_state');
+
+    // Listen for any change and re-render everything live
+    stateRef.on('value', snap => {
+      const data = snap.val();
+      if (data) {
+
+  state = {
+    scores: data.scores || {},
+    chips: data.chips || {},
+    currentStage: 'group'
+  };
+
+} else {
+
+  stateRef.set({
+    scores: {},
+    chips: {}
+  });
+
 }
+     console.log("STATE", state);
+      renderLeaderboard();
+      renderMatches();
+      renderChips();
+    });
+
+    // Connection indicator
+    db.ref('.info/connected').on('value', snap => {
+      const dot = document.getElementById('conn-dot');
+      const lbl = document.getElementById('conn-label');
+      if (snap.val()) {
+        dot.style.background = 'var(--pos)';
+        dot.style.boxShadow = '0 0 6px var(--pos)';
+        lbl.textContent = 'Live';
+        lbl.style.color = 'var(--pos)';
+      } else {
+        dot.style.background = 'var(--neg)';
+        dot.style.boxShadow = 'none';
+        lbl.textContent = 'Offline';
+        lbl.style.color = 'var(--neg)';
+      }
+    });
+  } catch(e) {
+    console.error('Firebase init failed:', e);
+  }
+}
+
+function loadState() {
+  // No-op — Firebase listener handles this
+}
+
 function saveState() {
-  try { localStorage.setItem('wc26_state', JSON.stringify(state)); } catch(e){}
+  if (stateRef) {
+    stateRef.set({ scores: state.scores || {}, chips: state.chips || {} })
+      .catch(e => console.error('Firebase save failed:', e));
+  }
 }
 
 // ── SCORING ENGINE ──
@@ -509,6 +582,15 @@ function saveState() {
 // ─────────────────────────────────────────────
 
 function getMatchScore(matchId) {
+
+  if (
+    !state ||
+    !state.scores ||
+    typeof state.scores !== 'object'
+  ) {
+    return null;
+  }
+
   return state.scores[matchId] || null;
 }
 
@@ -720,9 +802,9 @@ const awayOwners = PLAYERS.filter(p => {
           ${homeOwners ? `<div class="team-owner">👤 ${homeOwners}</div>` : ''}
         </div>
         <div class="score-inputs">
-          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–">
+          <input class="score-input" type="number" min="0" max="30" id="h-${m.id}" value="${sc.home}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
           <span class="score-sep">:</span>
-          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–">
+          <input class="score-input" type="number" min="0" max="30" id="a-${m.id}" value="${sc.away}" placeholder="–" ${!isAdmin ? 'disabled' : ''}>
         </div>
         <div class="match-team-side right">
           <div class="team-flag">${flag(m.away)}</div>
@@ -730,8 +812,10 @@ const awayOwners = PLAYERS.filter(p => {
           ${awayOwners ? `<div class="team-owner">👤 ${awayOwners}</div>` : ''}
         </div>
        <div class="btn-group">
+          ${isAdmin ? `
           <button class="save-btn${saved?' saved':''}" onclick="saveScore('${m.id}')">${saved?'✓ Saved':'Save'}</button>
           ${saved ? `<button class="reset-btn" onclick="resetScore('${m.id}')">Reset</button>` : ''}
+          ` : ''}
         </div>
       </div>`;
     }
@@ -810,13 +894,13 @@ function renderChips() {
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
         <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)">
+        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(groupMatches,'g')}
         </select>
       </div>
       <div class="chip-slot">
         <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)">
+        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(koMatches,'k')}
         </select>
       </div>
@@ -841,12 +925,67 @@ function saveChip(player, type, matchId) {
   renderLeaderboard();
 }
 
-// ── TABS ──
-function showTab(id) {
+// ── ADMIN AUTH ──
+const ADMIN_HASH = '30c1873ce6a93ff1ff4167e67af53e66ed35c369ea50ed4986ad8870f922d5d4';
+// Default password: wc2026admin
+// To change: open browser console and run:
+// crypto.subtle.digest('SHA-256',new TextEncoder().encode('newpwd')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+
+let isAdmin = false;
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
+async function toggleAdmin() {
+  if (isAdmin) {
+    isAdmin = false;
+    document.getElementById('admin-lock').textContent = '🔒';
+    document.getElementById('admin-lock').style.opacity = '0.08';
+    renderTabNav();
+    renderMatches();
+    renderChips();
+    activateTab('leaderboard');
+    return;
+  }
+  const pwd = prompt('Admin password:');
+  if (!pwd) return;
+  const hash = await sha256(pwd);
+  if (hash === ADMIN_HASH) {
+    isAdmin = true;
+    document.getElementById('admin-lock').textContent = '🔓';
+    document.getElementById('admin-lock').style.opacity = '0.55';
+    renderTabNav();
+    renderMatches();
+    renderChips();
+    activateTab('scores');
+    showToast('Admin mode on ✓');
+  } else {
+    showToast('Wrong password', '#E74C3C');
+  }
+}
+
+function renderTabNav() {
+  const nav = document.getElementById('tab-nav');
+  const backLink = '<a href="index.html" class="tab-btn">Back to Rules</a>';
+  const lbBtn    = '<button class="tab-btn" id="nav-leaderboard" onclick="activateTab(\'leaderboard\')">Standings</button>';
+  const scBtn    = '<button class="tab-btn" id="nav-scores"      onclick="activateTab(\'scores\')">Match Entry</button>';
+  const pkBtn    = '<button class="tab-btn" id="nav-picks"       onclick="activateTab(\'picks\')">Picks</button>';
+  const chBtn    = '<button class="tab-btn" id="nav-chips"       onclick="activateTab(\'chips\')">Super Chips</button>';
+  nav.innerHTML = isAdmin
+    ? backLink + lbBtn + scBtn + pkBtn + chBtn
+    : backLink + lbBtn + pkBtn;
+}
+
+function activateTab(id) {
+  
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  event.target.classList.add('active');
+  const page = document.getElementById('tab-' + id);
+  if (page) page.classList.add('active');
+  document.querySelectorAll('#tab-nav .tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('nav-' + id);
+  if (btn) btn.classList.add('active');
 }
 
 // ── TOAST ──
@@ -859,11 +998,10 @@ function showToast(msg, color) {
 }
 
 // ── INIT ──
-loadState();
-renderLeaderboard();
-renderMatches();
+renderTabNav();
+activateTab('leaderboard');
 renderPicks();
-renderChips();
+initFirebase();
 </script>
 </body>
 </html>
