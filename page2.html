@@ -8,13 +8,24 @@
  <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --gold: #D4A017; --gold-light: #F0C040; --green: #1A472A;
-    --cream: #F5F0E8; --pitch: #2D5A1B; --red: #C0392B;
-    --ink: #10121E; --ink2: #0D0F1A; --ink3: #181B2E;
-    --white: #FAFAF5; --border: #FFFFFF12; --muted: #8090A0;
-    --pos: #27AE60; --neg: #E74C3C;
-  }
-  body { background: var(--ink); color: var(--cream); font-family: 'Barlow', sans-serif; font-weight: 300; min-height: 100vh; }
+  --gold: #D4A017; --gold-light: #F0C040; --green: #1A472A;
+  --cream: #F5F0E8; --pitch: #2D5A1B; --red: #C0392B;
+  --white: #FAFAF5; --border: #FFFFFF12; --muted: #8090A0;
+  --pos: #27AE60; --neg: #E74C3C;
+
+  /* Day mode defaults */
+  --ink: #F5F5F0; --ink2: #EAEAE4; --ink3: #E0E0D8;
+}
+
+:root.dark {
+  --ink: #10121E; --ink2: #0D0F1A; --ink3: #181B2E;
+  --border: #FFFFFF12; --muted: #8090A0;
+}
+
+:root.light {
+  --ink: #F5F5F0; --ink2: #EAEAE4; --ink3: #E0E0D8;
+  --border: #00000012; --muted: #607080;
+}
 
   /* ── TOP BAR ── */
   .topbar {
@@ -1042,12 +1053,20 @@ function showToast(msg, color) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
+ 
+// ── TIME-BASED THEME ──
+function applyTheme() {
+  const hour = new Date().getHours();
+  const isDark = hour < 6 || hour >= 19;
+  document.documentElement.classList.toggle('dark', isDark);
+  document.documentElement.classList.toggle('light', !isDark);
+}
+applyTheme();
+setInterval(applyTheme, 60 * 1000);
 
 // ── INIT ──
 renderTabNav();
 activateTab('leaderboard');
 renderPicks();
 initFirebase();
-</script>
-</body>
-</html>
+
