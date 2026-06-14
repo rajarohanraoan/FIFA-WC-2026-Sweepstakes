@@ -257,7 +257,7 @@
         <th>Player</th>
         <th>P1 Team</th>
         <th>P2 Team</th>
-        <th>P3 Team</th>       
+        <th id="th-p3">P3 Team</th>     
         <th>Progress</th>
         <th>Points</th>
       </tr>
@@ -765,13 +765,16 @@ function setStage(s) {
 function renderLeaderboard() {
   const ranked = getRankedPlayers(currentStage);
   const maxPts = Math.max(...ranked.map(r => Math.abs(r.pts)), 1);
-
+ 
+// Show/hide P3 column header based on stage
+  const th3 = document.getElementById('th-p3');
+  if (th3) th3.style.display = currentStage === 'group' ? '' : 'none';
   const tbody = document.getElementById('lb-body');
   tbody.innerHTML = ranked.map((r, i) => {
-    const picks = currentStage === 'group' ? GROUP_PICKS[r.name] : KO_PICKS[r.name];
+   const picks = currentStage === 'group' ? GROUP_PICKS[r.name] : KO_PICKS[r.name];
     const p1 = picks && picks.p1 ? (flag(picks.p1) + ' ' + picks.p1) : '—';
     const p2 = picks && picks.p2 ? (flag(picks.p2) + ' ' + picks.p2) : '—';
-    const p3 = picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : '—';
+    const p3 = currentStage === 'group' && picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : null;
     const ptsClass = r.pts > 0 ? 'pts-pos' : r.pts < 0 ? 'pts-neg' : 'pts-zero';
     const barPct = Math.min(100, (Math.abs(r.pts) / maxPts) * 100);
     const barNeg = r.pts < 0;
@@ -791,7 +794,7 @@ function renderLeaderboard() {
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
-      <td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>
+     ${p3 !== null ? `<td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>` : ''}
       <td>
         <span class="bar-wrap"><span class="bar-fill${barNeg?' neg':''}" style="width:${barPct}%"></span></span>
       </td>
