@@ -246,8 +246,8 @@
       <div class="lb-subtitle">Live Leaderboard · Auto-Updates</div>
     </div>
     <div class="stage-toggle">
-      <button class="stage-btn active" onclick="setStage('group')">Group Stage</button>
-      <button class="stage-btn" onclick="setStage('knockout')">Knockout</button>
+      <button class="stage-btn active" onclick="setStage('group', this)">Group Stage</button>
+      <button class="stage-btn" onclick="setStage('knockout', this)">Knockout</button>
     </div>
   </div>
   <table class="lb-table">
@@ -755,10 +755,10 @@ function getRankedPlayers(stage) {
 // ── LEADERBOARD ──
 let currentStage = 'group';
 
-function setStage(s) {
+function setStage(s, btn) {
   currentStage = s;
   document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  if (btn) btn.classList.add('active');
   renderLeaderboard();
 }
 
