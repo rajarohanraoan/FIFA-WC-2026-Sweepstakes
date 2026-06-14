@@ -778,15 +778,16 @@ function renderLeaderboard() {
     const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
-    // chip indicators
+   // chip indicators — only show chip relevant to current stage
     const chip = state.chips[r.name] || {};
-    const gsChip = chip.group ? '⚡GS' : null;
-    const koChip = chip.ko ? '⚡KO' : null;
+    const chipBadge = currentStage === 'group'
+      ? (chip.group ? '⚡ GS Chip' : null)
+      : (chip.ko    ? '⚡ KO Chip' : null);
 
     return `<tr class="${rankClass}">
       <td><span class="rank-num">${medal || (i+1)}</span></td>
       <td>
-        <div class="player-name">${r.name}${gsChip ? `<span class="chip-badge">${gsChip}</span>` : ''}${koChip ? `<span class="chip-badge">${koChip}</span>` : ''}</div>
+        <div class="player-name">${r.name}${chipBadge ? `<span class="chip-badge">${chipBadge}</span>` : ''}</div>
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
