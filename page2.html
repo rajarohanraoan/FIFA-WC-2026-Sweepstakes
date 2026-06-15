@@ -930,31 +930,31 @@ function renderChips() {
   const groupMatches = MATCH_SCHEDULE.filter(m => m.stage === 'group');
   const koMatches = MATCH_SCHEDULE.filter(m => ['r32','r16','qf','sf','final'].includes(m.stage));
 
-  const matchOpts = (matches, prefix) =>
+  const matchOpts = (matches) =>
     `<option value="">— No chip yet —</option>` +
     matches.map(m => `<option value="${m.id}">${m.label}: ${m.home} vs ${m.away}</option>`).join('');
 
   container.innerHTML = PLAYERS.map(p => {
-    const chip = state.chips[p] || {};
     const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
     return `<div class="chip-card">
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
         <div class="chip-slot-label">Group Stage Chip</div>
         <select class="chip-select" id="chip-g-${pid}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(groupMatches,'g')}
+          ${matchOpts(groupMatches)}
         </select>
       </div>
       <div class="chip-slot">
         <div class="chip-slot-label">Knockout Chip</div>
         <select class="chip-select" id="chip-k-${pid}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(koMatches,'k')}
+          ${matchOpts(koMatches)}
         </select>
       </div>
     </div>`;
+  }).join('');
 
   // Restore saved chip selections
-PLAYERS.forEach(p => {
+  PLAYERS.forEach(p => {
     const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
     const chip = state.chips[p] || {};
     const gEl = document.getElementById('chip-g-' + pid);
@@ -962,6 +962,7 @@ PLAYERS.forEach(p => {
     if (gEl && chip.group) gEl.value = chip.group;
     if (kEl && chip.ko)    kEl.value = chip.ko;
   });
+}
 
 function saveChip(player, type, matchId) {
   if (!state.chips[player]) state.chips[player] = {};
