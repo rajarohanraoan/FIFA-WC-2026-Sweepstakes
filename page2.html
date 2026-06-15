@@ -936,32 +936,32 @@ function renderChips() {
 
   container.innerHTML = PLAYERS.map(p => {
     const chip = state.chips[p] || {};
+    const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
     return `<div class="chip-card">
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
         <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${p}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
+        <select class="chip-select" id="chip-g-${pid}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(groupMatches,'g')}
         </select>
       </div>
       <div class="chip-slot">
         <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${p}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
+        <select class="chip-select" id="chip-k-${pid}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
           ${matchOpts(koMatches,'k')}
         </select>
       </div>
     </div>`;
-  }).join('');
 
   // Restore saved chip selections
-  PLAYERS.forEach(p => {
+PLAYERS.forEach(p => {
+    const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
     const chip = state.chips[p] || {};
-    const gEl = document.getElementById('chip-g-' + p);
-    const kEl = document.getElementById('chip-k-' + p);
+    const gEl = document.getElementById('chip-g-' + pid);
+    const kEl = document.getElementById('chip-k-' + pid);
     if (gEl && chip.group) gEl.value = chip.group;
     if (kEl && chip.ko)    kEl.value = chip.ko;
   });
-}
 
 function saveChip(player, type, matchId) {
   if (!state.chips[player]) state.chips[player] = {};
