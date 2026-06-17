@@ -252,15 +252,15 @@
     </div>
   </div>
   <table class="lb-table">
-    <thead>
+   <thead>
       <tr>
         <th style="width:44px">#</th>
         <th>Player</th>
         <th>P1 Team</th>
         <th>P2 Team</th>
         <th id="th-p3">P3 Team</th>     
-        <th style="text-align:right">GS Pts</th>
-        <th style="text-align:right">KO Pts</th>
+        <th id="th-gs" style="text-align:right">GS Pts</th>
+        <th id="th-ko" style="text-align:right">KO Pts</th>
         <th style="text-align:right">Total</th>
       </tr>
     </thead>
@@ -779,7 +779,6 @@ function renderLeaderboard() {
   const ranked = getRankedPlayers(currentStage);
 
   // Format a number that may have a .5 fraction (from 50% carry)
-  // - whole numbers shown as integers, halves shown as ".5"
   const fmt = (n) => {
     const sign = n > 0 ? '+' : '';
     const abs = Math.abs(n);
@@ -788,23 +787,34 @@ function renderLeaderboard() {
   };
   const cls = (n) => n > 0 ? 'pts-pos' : n < 0 ? 'pts-neg' : 'pts-zero';
 
-// Show/hide P3 column header based on stage
+  const isGroup = currentStage === 'group';
+
+  // Toggle Visibility of Table Headers
   const th3 = document.getElementById('th-p3');
-  if (th3) th3.style.display = currentStage === 'group' ? '' : 'none';
+  const thGs = document.getElementById('th-gs');
+  const thKo = document.getElementById('th-ko');
+  
+  if (th3) th3.style.display = isGroup ? '' : 'none';
+  if (thGs) thGs.style.display = isGroup ? 'none' : '';
+  if (thKo) thKo.style.display = isGroup ? 'none' : '';
+
   const tbody = document.getElementById('lb-body');
   tbody.innerHTML = ranked.map((r, i) => {
-   const picks = currentStage === 'group' ? GROUP_PICKS[r.name] : KO_PICKS[r.name];
+    const picks = isGroup ? GROUP_PICKS[r.name] : KO_PICKS[r.name];
     const p1 = picks && picks.p1 ? (flag(picks.p1) + ' ' + picks.p1) : '—';
     const p2 = picks && picks.p2 ? (flag(picks.p2) + ' ' + picks.p2) : '—';
-    const p3 = currentStage === 'group' && picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : null;
+    const p3 = isGroup && picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : null;
     const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
-   // chip indicators — only show chip relevant to current stage
     const chip = state.chips[r.name] || {};
-    const chipBadge = currentStage === 'group'
+    const chipBadge = isGroup
       ? (chip.group ? '⚡ GS Chip' : null)
       : (chip.ko    ? '⚡ KO Chip' : null);
+
+    // FIX LOGIC: Display actual full points during Group Stage view, 
+    // but show the 50% half-points carryover rule strictly in Knockout view.
+    const displayTotal = isGroup ? (r.gs * 2) : r.pts;
 
     return `<tr class="${rankClass}">
       <td><span class="rank-num">${medal || (i+1)}</span></td>
@@ -813,10 +823,12 @@ function renderLeaderboard() {
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
-     ${p3 !== null ? `<td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>` : ''}
-      <td style="text-align:right"><span class="pts-sub ${cls(r.gs)}" title="50% of Group Stage points carried forward">${fmt(r.gs)}</span></td>
-      <td style="text-align:right"><span class="pts-sub ${cls(r.ko)}">${fmt(r.ko)}</span></td>
-      <td style="text-align:right"><span class="pts-cell ${cls(r.pts)}">${fmt(r.pts)}</span></td>
+      ${p3 !== null ? `<td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>` : ''}
+      
+      ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.gs)}" title="50% of Group Stage points carried forward">${fmt(r.gs)}</span></td>` : ''}
+      ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.ko)}">${fmt(r.ko)}</span></td>` : ''}
+      
+      <td style="text-align:right"><span class="pts-cell ${cls(displayTotal)}">${fmt(displayTotal)}</span></td>
     </tr>`;
   }).join('');
 }
