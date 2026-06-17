@@ -270,7 +270,7 @@
         <th id="th-p3">P3 Team</th>     
         <th id="th-gs" style="text-align:right">GS Pts</th>
         <th id="th-ko" style="text-align:right">KO Pts</th>
-        <th style="text-align:right">Points</th>
+        <th id="th-total" style="text-align:right">Points</th>
       </tr>
     </thead>
     <tbody id="lb-body"></tbody>
@@ -798,14 +798,20 @@ function renderLeaderboard() {
 
   const isGroup = currentStage === 'group';
 
-  // Toggle Visibility of Table Headers
+// Toggle Visibility and Wording of Table Headers
   const th3 = document.getElementById('th-p3');
   const thGs = document.getElementById('th-gs');
   const thKo = document.getElementById('th-ko');
+  const thTotal = document.getElementById('th-total');
   
   if (th3) th3.style.display = isGroup ? '' : 'none';
   if (thGs) thGs.style.display = isGroup ? 'none' : '';
   if (thKo) thKo.style.display = isGroup ? 'none' : '';
+  
+  // Changes the header text based on the active stage tab
+  if (thTotal) {
+    thTotal.textContent = isGroup ? 'Points' : 'Total Points';
+  }
 
   const tbody = document.getElementById('lb-body');
   tbody.innerHTML = ranked.map((r, i) => {
