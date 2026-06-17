@@ -78,6 +78,7 @@
   .player-teams { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
   .pts-cell { font-family: 'Bebas Neue', sans-serif; font-size: 28px; }
+  .pts-sub  { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--cream); opacity: 0.85; }
   .pts-pos { color: var(--pos); }
   .pts-neg { color: var(--neg); }
   .pts-zero { color: var(--muted); }
@@ -258,8 +259,9 @@
         <th>P1 Team</th>
         <th>P2 Team</th>
         <th id="th-p3">P3 Team</th>     
-        <th>Progress</th>
-        <th>Points</th>
+        <th style="text-align:right">GS Pts</th>
+        <th style="text-align:right">KO Pts</th>
+        <th style="text-align:right">Total</th>
       </tr>
     </thead>
     <tbody id="lb-body"></tbody>
@@ -736,11 +738,22 @@ function computePoints(player, stage) {
 
 function getRankedPlayers(stage) {
 
+  // GS-carried = 50% of Group Stage points (carried forward into Knockout)
+  // KO         = raw Knockout points
+  // Total      = GS-carried + KO
   return [...PLAYERS]
-    .map(player => ({
-      name: player,
-      pts: computePoints(player, stage)
-    }))
+    .map(player => {
+      const gsRaw   = computePoints(player, 'group');
+      const koRaw   = computePoints(player, 'knockout');
+      const gsCarry = gsRaw / 2;   // 50% of GS points carried forward
+      const total   = gsCarry + koRaw;
+      return {
+        name: player,
+        gs: gsCarry,
+        ko: koRaw,
+        pts: total
+      };
+    })
     .sort((a, b) => {
 
       if (b.pts !== a.pts) {
@@ -764,8 +777,17 @@ function setStage(s, btn) {
 
 function renderLeaderboard() {
   const ranked = getRankedPlayers(currentStage);
-  const maxPts = Math.max(...ranked.map(r => Math.abs(r.pts)), 1);
- 
+
+  // Format a number that may have a .5 fraction (from 50% carry)
+  // - whole numbers shown as integers, halves shown as ".5"
+  const fmt = (n) => {
+    const sign = n > 0 ? '+' : '';
+    const abs = Math.abs(n);
+    const s = (abs % 1 === 0) ? abs.toString() : abs.toFixed(1);
+    return (n < 0 ? '-' : sign) + s;
+  };
+  const cls = (n) => n > 0 ? 'pts-pos' : n < 0 ? 'pts-neg' : 'pts-zero';
+
 // Show/hide P3 column header based on stage
   const th3 = document.getElementById('th-p3');
   if (th3) th3.style.display = currentStage === 'group' ? '' : 'none';
@@ -775,9 +797,6 @@ function renderLeaderboard() {
     const p1 = picks && picks.p1 ? (flag(picks.p1) + ' ' + picks.p1) : '—';
     const p2 = picks && picks.p2 ? (flag(picks.p2) + ' ' + picks.p2) : '—';
     const p3 = currentStage === 'group' && picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : null;
-    const ptsClass = r.pts > 0 ? 'pts-pos' : r.pts < 0 ? 'pts-neg' : 'pts-zero';
-    const barPct = Math.min(100, (Math.abs(r.pts) / maxPts) * 100);
-    const barNeg = r.pts < 0;
     const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
@@ -795,10 +814,9 @@ function renderLeaderboard() {
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
      ${p3 !== null ? `<td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>` : ''}
-      <td>
-        <span class="bar-wrap"><span class="bar-fill${barNeg?' neg':''}" style="width:${barPct}%"></span></span>
-      </td>
-      <td><span class="pts-cell ${ptsClass}">${r.pts > 0 ? '+' : ''}${r.pts}</span></td>
+      <td style="text-align:right"><span class="pts-sub ${cls(r.gs)}" title="50% of Group Stage points carried forward">${fmt(r.gs)}</span></td>
+      <td style="text-align:right"><span class="pts-sub ${cls(r.ko)}">${fmt(r.ko)}</span></td>
+      <td style="text-align:right"><span class="pts-cell ${cls(r.pts)}">${fmt(r.pts)}</span></td>
     </tr>`;
   }).join('');
 }
