@@ -16,13 +16,16 @@
   }
   body { background: var(--ink); color: var(--cream); font-family: 'Barlow', sans-serif; font-weight: 300; min-height: 100vh; }
 
-  /* ── TOP BAR ── */
+/* ── TOP BAR ── */
   .topbar {
     background: var(--ink2);
     border-bottom: 1px solid var(--border);
-    padding: 0 24px;
+    padding: 12px 24px; /* Added vertical padding */
     display: flex; align-items: center; justify-content: space-between;
-    height: 56px; position: sticky; top: -50; z-index: 100;
+    min-height: 56px; /* Changed height to min-height */
+    flex-wrap: wrap; /* Allows stacking gracefully on tiny screens */
+    gap: 12px; /* Prevents text elements from colliding if they stack */
+    position: sticky; top: 0; z-index: 100;
   }
   .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold-light); letter-spacing: 2px; }
   .topbar-logo span { color: #FFFFFF50; font-size: 16px; margin-left: 10px; letter-spacing: 1px; }
