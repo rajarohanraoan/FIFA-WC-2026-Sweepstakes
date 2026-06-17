@@ -216,8 +216,14 @@
   }
   .toast.show { transform: translateY(0); opacity: 1; }
 
-  /* ── RESPONSIVE ── */
+ /* ── RESPONSIVE ── */
   @media (max-width: 700px) {
+    .topbar {
+      position: relative; /* Changes header from sticky to normal flow on mobile */
+    }
+    .page {
+      padding: 16px 16px; /* Gives the main content more breathing room on mobile */
+    }
     .match-card { grid-template-columns: 1fr 1fr; gap: 12px; }
     .score-inputs { grid-column: 1 / -1; justify-content: center; }
     .save-btn { grid-column: 1 / -1; width: 100%; text-align: center; }
