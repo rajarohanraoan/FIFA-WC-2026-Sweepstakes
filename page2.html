@@ -823,9 +823,17 @@ function renderLeaderboard() {
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
     const chip = state.chips[r.name] || {};
-    const chipBadge = isGroup
-      ? (chip.group ? '⚡ GS Chip' : null)
-      : (chip.ko    ? '⚡ KO Chip' : null);
+    const chipMatchId = isGroup ? chip.group : chip.ko;
+    let chipBadge = null;
+    let chipBadgeClass = 'chip-badge';
+    if (chipMatchId) {
+      const isPlayed = state.scores[chipMatchId] !== undefined;
+      const stagePrefix = isGroup ? 'GS' : 'KO';
+      chipBadge = isPlayed
+        ? `⚡ ${stagePrefix} Superchip - Used`
+        : `⚡ ${stagePrefix} Superchip - Activated`;
+      chipBadgeClass = isPlayed ? 'chip-badge used' : 'chip-badge';
+    }
 
     // FIX LOGIC: Display actual full points during Group Stage view, 
     // but show the 50% half-points carryover rule strictly in Knockout view.
@@ -834,7 +842,7 @@ function renderLeaderboard() {
     return `<tr class="${rankClass}">
       <td><span class="rank-num">${medal || (i+1)}</span></td>
       <td>
-        <div class="player-name">${r.name}${chipBadge ? `<span class="chip-badge">${chipBadge}</span>` : ''}</div>
+        <div class="player-name">${r.name}${chipBadge ? `<span class="${chipBadgeClass}">${chipBadge}</span>` : ''}</div>
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
