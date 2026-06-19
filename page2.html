@@ -830,8 +830,8 @@ function renderLeaderboard() {
       const isPlayed = state.scores[chipMatchId] !== undefined;
       const stagePrefix = isGroup ? 'GS' : 'KO';
       chipBadge = isPlayed
-        ? `⚡ ${stagePrefix} SC - Used`
-        : `⚡ ${stagePrefix} SC - Activated`;
+        ? `⚡ Used`
+        : `⚡ Activated`;
       chipBadgeClass = isPlayed ? 'chip-badge used' : 'chip-badge';
     }
 
