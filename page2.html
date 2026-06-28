@@ -375,6 +375,13 @@ const PREDICTIONS = {
   "Vinayak":        { boot: "Kylian Mbappé - 2",       glove: "Manuel Neuer - 1",    winner: "Spain - 3" },
 };
 
+ // ── PENALTIES ──
+// Manual point deductions (or bonuses) applied to a player's total.
+// Use a negative number for a penalty, positive for a bonus.
+const PENALTIES = {
+  "Pavan Jami": -10,   // example: replace with the actual player name and amount
+};
+
 // Country flag emoji lookup (subset)
 const FLAGS = {
   "France":"🇫🇷",
@@ -764,17 +771,19 @@ function getRankedPlayers(stage) {
 
   // GS-carried = 50% of Group Stage points (carried forward into Knockout)
   // KO         = raw Knockout points
-  // Total      = GS-carried + KO
+  // Total      = GS-carried + KO + any manual penalty/bonus
   return [...PLAYERS]
     .map(player => {
-      const gsRaw   = computePoints(player, 'group');
-      const koRaw   = computePoints(player, 'knockout');
-      const gsCarry = gsRaw / 2;   // 50% of GS points carried forward
-      const total   = gsCarry + koRaw;
+      const gsRaw    = computePoints(player, 'group');
+      const koRaw    = computePoints(player, 'knockout');
+      const gsCarry  = gsRaw / 2;   // 50% of GS points carried forward
+      const penalty  = PENALTIES[player] || 0;
+      const total    = gsCarry + koRaw + penalty;
       return {
         name: player,
         gs: gsCarry,
         ko: koRaw,
+        penalty: penalty,
         pts: total
       };
     })
@@ -854,10 +863,14 @@ function renderLeaderboard() {
     // but show the 50% half-points carryover rule strictly in Knockout view.
     const displayTotal = isGroup ? (r.gs * 2) : r.pts;
 
+ const penaltyBadge = r.penalty
+      ? `<span class="chip-badge" style="background:#E74C3C20;border-color:#E74C3C40;color:var(--neg)">${r.penalty > 0 ? '+' : ''}${r.penalty} pen</span>`
+      : '';
+
     return `<tr class="${rankClass}">
       <td><span class="rank-num">${medal || (i+1)}</span></td>
       <td>
-        <div class="player-name">${r.name}${chipBadge ? `<span class="${chipBadgeClass}">${chipBadge}</span>` : ''}</div>
+        <div class="player-name">${r.name}${chipBadge ? `<span class="${chipBadgeClass}">${chipBadge}</span>` : ''}${penaltyBadge}</div>
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
