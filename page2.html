@@ -863,12 +863,11 @@ function renderLeaderboard() {
     // but show the 50% half-points carryover rule strictly in Knockout view.
     const displayTotal = isGroup ? (r.gs * 2) : r.pts;
 
- const penaltyBadge = r.penalty
-      ? `<span class="chip-badge" style="background:#E74C3C20;border-color:#E74C3C40;color:var(--neg)">${r.penalty > 0 ? '+' : ''}${r.penalty} pen</span>`
-      : '';
-
-    return `<tr class="${rankClass}">
+ return `<tr class="${rankClass}">
       <td><span class="rank-num">${medal || (i+1)}</span></td>
+      <td>
+        <div class="player-name">${r.name}${chipBadge ? `<span class="${chipBadgeClass}">${chipBadge}</span>` : ''}</div>
+      </td>n class="rank-num">${medal || (i+1)}</span></td>
       <td>
         <div class="player-name">${r.name}${chipBadge ? `<span class="${chipBadgeClass}">${chipBadge}</span>` : ''}${penaltyBadge}</div>
       </td>
