@@ -760,21 +760,30 @@ function computePoints(player, stage) {
   return total;
 }
 
+// ── PENALTIES ──
+// Manual point adjustment applied ONLY to Knockout totals (never Group Stage).
+const PENALTIES = {
+  "Pavan Jami": -10, "Kireet": 10,  // replace with the actual player name and amount
+};
+
 function getRankedPlayers(stage) {
 
   // GS-carried = 50% of Group Stage points (carried forward into Knockout)
-  // KO         = raw Knockout points
-  // Total      = GS-carried + KO
+  // KO         = raw Knockout points + any manual penalty/bonus
+  // Total      = GS-carried + KO (penalty already folded into KO)
   return [...PLAYERS]
     .map(player => {
-      const gsRaw   = computePoints(player, 'group');
-      const koRaw   = computePoints(player, 'knockout');
-      const gsCarry = gsRaw / 2;   // 50% of GS points carried forward
-      const total   = gsCarry + koRaw;
+      const gsRaw    = computePoints(player, 'group');
+      const koRaw    = computePoints(player, 'knockout');
+      const gsCarry  = gsRaw / 2;   // 50% of GS points carried forward — penalty-free
+      const penalty  = PENALTIES[player] || 0;
+      const koTotal  = koRaw + penalty;   // penalty hits KO only
+      const total    = gsCarry + koTotal;
       return {
         name: player,
         gs: gsCarry,
-        ko: koRaw,
+        ko: koTotal,
+        penalty: penalty,
         pts: total
       };
     })
