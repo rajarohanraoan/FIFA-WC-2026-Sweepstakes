@@ -96,7 +96,7 @@
     background: #D4A01720; border: 1px solid #D4A01740; color: var(--gold);
     padding: 2px 8px; border-radius: 100px; margin-left: 6px;
   }
-  .chip-badge.used { background: #FFFFFF08; border-color: var(--border); color: var(--muted); text-decoration:""; }
+  .chip-badge.used { background: #FFFFFF08; border-color: var(--border); color: var(--muted); text-decoration: line-through; }
 
   .movement { font-size: 11px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
   .movement.up { color: var(--pos); }
@@ -323,8 +323,8 @@ const GROUP_PICKS = {
   "Jeetu":          { p1: "Uruguay",      p2: "Sweden",        p3: "DR Congo" },
   "Kireet":         { p1: "Argentina",    p2: "Côte d'Ivoire", p3: "Saudi Arabia" },
   "Nikhil":         { p1: "France",       p2: "Canada",        p3:"Bosnia and Herzegovina" },
-  "Pavan BP":       { p1: "Spain",        p2: "Uzbekistan",    p3: "Switzerland"},
-  "Pavan GK":       { p1: "Mexico",       p2: "Türkiye" ,      p3: "Japan"},
+  "Pavan BP":      { p1: "Spain",        p2: "Uzbekistan",    p3: "Switzerland"},
+  "Pavan GK":      { p1: "Mexico",       p2: "Türkiye" ,      p3: "Japan"},
   "Pavan Jami":     { p1: "England",      p2: "Panama",        p3: "Paraguay" },
   "Rahul":          { p1: "Croatia",      p2: "Algeria",       p3: "Iraq" },
   "Ramya":          { p1: "Colombia",     p2: "Scotland" ,     p3: "Australia"},
@@ -335,6 +335,8 @@ const GROUP_PICKS = {
   "Vinayak":        { p1: "Belgium",      p2: "Ghana",         p3:"Czechia"},
 };
 
+// Knockout picks
+const KO_PICKS = {
 // Knockout picks
 const KO_PICKS = {
   "Anand":          { p1: "Paraguay",     p2: "Austria"},
@@ -373,13 +375,6 @@ const PREDICTIONS = {
   "Sriram":         { boot: "Harry Kane - 10",         glove: "Emi Martinez - 7",    winner: "Portugal -10" }, 
   "Sushmit":        { boot: "Kylian Mbappé - 6",       glove: "Mike Maignan - 4",    winner: "Spain - 6" },
   "Vinayak":        { boot: "Kylian Mbappé - 2",       glove: "Manuel Neuer - 1",    winner: "Spain - 3" },
-};
-
- // ── PENALTIES ──
-// Manual point deductions (or bonuses) applied to a player's total.
-// Use a negative number for a penalty, positive for a bonus.
-const PENALTIES = {
-  "Pavan Jami": -10, "Kireet": +10  // example: replace with the actual player name and amount
 };
 
 // Country flag emoji lookup (subset)
@@ -528,7 +523,7 @@ const MATCH_SCHEDULE = [
   { id: "71", stage: "group", md: 3, home: "Panama",         away: "England",                 label: "Group L · MD3" },
   { id: "72", stage: "group", md: 3, home: "Croatia",        away: "Ghana",                   label: "Group L · MD3" },
  
-  // Knockout template (teams TBD once draw is done)
+   // Knockout template (teams TBD once draw is done)
   { id:"r32_1", stage:"r32",  md:1, home:"South Africa",     away:"Canada",         label:"R32 · Match 1" },
   { id:"r32_2", stage:"r32",  md:1, home:"Brazil",           away:"Japan",          label:"R32 · Match 2" },
   { id:"r32_3", stage:"r32",  md:1, home:"Germany",          away:"Paraguay",       label:"R32 · Match 3" },
@@ -545,9 +540,7 @@ const MATCH_SCHEDULE = [
   { id:"r32_14", stage:"r32",  md:1, home:"Australia",       away:"Egypt",         label:"R32 · Match 14" },
   { id:"r32_15", stage:"r32",  md:1, home:"Argentina",       away:"Cape Verde",    label:"R32 · Match 15" },
   { id:"r32_16", stage:"r32",  md:1, home:"Colombia",        away:"Ghana",         label:"R32 · Match 16" },
-
-  { id:"r16_1", stage:"r16",  md:1, home:"TBD",         away:"TBD",         label:"R16 · Match 1" },
-  { id:"r16_2", stage:"r16",  md:1, home:"TBD",         away:"TBD",         label:"R16 · Match 2" },
+ 
   { id:"qf_1",  stage:"qf",   md:1, home:"TBD",         away:"TBD",         label:"QF · Match 1" },
   { id:"qf_2",  stage:"qf",   md:1, home:"TBD",         away:"TBD",         label:"QF · Match 2" },
   { id:"sf_1",  stage:"sf",   md:1, home:"TBD",         away:"TBD",         label:"Semi Final 1" },
@@ -771,19 +764,17 @@ function getRankedPlayers(stage) {
 
   // GS-carried = 50% of Group Stage points (carried forward into Knockout)
   // KO         = raw Knockout points
-  // Total      = GS-carried + KO + any manual penalty/bonus
+  // Total      = GS-carried + KO
   return [...PLAYERS]
     .map(player => {
-      const gsRaw    = computePoints(player, 'group');
-      const koRaw    = computePoints(player, 'knockout');
-      const gsCarry  = gsRaw / 2;   // 50% of GS points carried forward
-      const penalty  = PENALTIES[player] || 0;
-      const total    = gsCarry + koRaw + penalty;
+      const gsRaw   = computePoints(player, 'group');
+      const koRaw   = computePoints(player, 'knockout');
+      const gsCarry = gsRaw / 2;   // 50% of GS points carried forward
+      const total   = gsCarry + koRaw;
       return {
         name: player,
         gs: gsCarry,
         ko: koRaw,
-        penalty: penalty,
         pts: total
       };
     })
@@ -847,29 +838,18 @@ function renderLeaderboard() {
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
     const chip = state.chips[r.name] || {};
-    const chipMatchId = isGroup ? chip.group : chip.ko;
-    let chipBadge = null;
-    let chipBadgeClass = 'chip-badge';
-    if (chipMatchId) {
-      const isPlayed = state.scores[chipMatchId] !== undefined;
-      const stagePrefix = isGroup ? 'GS' : 'KO';
-      chipBadge = isPlayed
-        ? `⚡ Used`
-        : `⚡ Activated`;
-      chipBadgeClass = isPlayed ? 'chip-badge used' : 'chip-badge';
-    }
+    const chipBadge = isGroup
+      ? (chip.group ? '⚡ GS Chip' : null)
+      : (chip.ko    ? '⚡ KO Chip' : null);
 
     // FIX LOGIC: Display actual full points during Group Stage view, 
     // but show the 50% half-points carryover rule strictly in Knockout view.
     const displayTotal = isGroup ? (r.gs * 2) : r.pts;
 
- return `<tr class="${rankClass}">
+    return `<tr class="${rankClass}">
       <td><span class="rank-num">${medal || (i+1)}</span></td>
       <td>
-        <div class="player-name">${r.name}${chipBadge ? `<span class="${chipBadgeClass}">${chipBadge}</span>` : ''}</div>
-      </td>n class="rank-num">${medal || (i+1)}</span></td>
-      <td>
-        <div class="player-name">${r.name}${chipBadge ? `<span class="${chipBadgeClass}">${chipBadge}</span>` : ''}${penaltyBadge}</div>
+        <div class="player-name">${r.name}${chipBadge ? `<span class="chip-badge">${chipBadge}</span>` : ''}</div>
       </td>
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
