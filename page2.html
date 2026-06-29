@@ -1,14 +1,3 @@
-Here is the fully fixed and consolidated source code.
-
-### What Was Wrong:
-
-The issue lay in your `getRankedPlayers(stage)` sorting mechanism. It was returning players sorted by their full **Total Points** (`pts`) regardless of whether you were viewing the "Group Stage" tab or the "Knockout" tab.
-
-### The Fix:
-
-The updated logic splits the sorting parameter completely. If the user clicks on the **Group Stage** tab, players are ranked solely on their raw, unchanged Group Stage performance. When switching over to the **Knockout** tab, the application locks in the strict 50% Group Stage point deduction, adds the standalone Knockout scores plus any manual adjustments, and sorts by the resulting comprehensive multi-stage tally.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
