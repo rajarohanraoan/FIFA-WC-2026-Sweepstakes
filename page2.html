@@ -732,7 +732,7 @@ function computePoints(player, stage) {
 
       }
 
-      let teamPoints =
+     let teamPoints =
         calculateTeamPoints(goalsFor, goalsAgainst);
 
       // Super Chip
@@ -742,15 +742,15 @@ function computePoints(player, stage) {
           : "ko";
 
       const chipData = state.chips[player];
-      const chipMatch =
-        chipData
-          ? chipData[chipStage]
-          : null;
-
-      if (chipMatch === match.id) {
-        teamPoints *= 2;
+      if (chipData) {
+        const chipMatch = chipData[chipStage];
+        const chipTeam = chipData[chipStage + 'Team'];
+        
+        // Double points only if the match matches AND the active team matches the selected chip team
+        if (chipMatch === match.id && chipTeam === team) {
+          teamPoints *= 2;
+        }
       }
-
       total += teamPoints;
     }
   }
