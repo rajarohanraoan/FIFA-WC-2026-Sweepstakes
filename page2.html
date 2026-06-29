@@ -22,9 +22,9 @@
     border-bottom: 1px solid var(--border);
     padding: 12px 24px;
     display: flex; align-items: center; justify-content: space-between;
-    min-height: 56px;
-    flex-wrap: wrap;
-    gap: 12px;
+    min-height: 56px; 
+    flex-wrap: wrap; 
+    gap: 12px; 
     position: sticky; top: 0; z-index: 100;
   }
   .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold-light); letter-spacing: 2px; }
@@ -218,12 +218,8 @@
 
  /* ── RESPONSIVE ── */
   @media (max-width: 700px) {
-    .topbar {
-      position: relative;
-    }
-    .page {
-      padding: 16px 16px;
-    }
+    .topbar { position: relative; }
+    .page { padding: 16px 16px; }
     .match-card { grid-template-columns: 1fr 1fr; gap: 12px; }
     .score-inputs { grid-column: 1 / -1; justify-content: center; }
     .save-btn { grid-column: 1 / -1; width: 100%; text-align: center; }
@@ -248,6 +244,7 @@
 </div>
 <div id="admin-lock" onclick="toggleAdmin()" style="position:fixed;bottom:20px;right:20px;font-size:16px;opacity:0.08;cursor:pointer;transition:opacity 0.2s;z-index:200;user-select:none" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity=isAdmin?'0.55':'0.08'">🔒</div>
 
+<!-- ══════════════ LEADERBOARD ══════════════ -->
 <div id="tab-leaderboard" class="page active">
   <div class="lb-header">
     <div>
@@ -276,6 +273,7 @@
   </table>
 </div>
 
+<!-- ══════════════ SCORE ENTRY ══════════════ -->
 <div id="tab-scores" class="page">
   <div class="section-head">
     <h2>Match Entry</h2>
@@ -284,6 +282,7 @@
   <div id="matches-container"></div>
 </div>
 
+<!-- ══════════════ PICKS ══════════════ -->
 <div id="tab-picks" class="page">
   <div class="section-head">
     <h3>All Picks</h3>
@@ -292,6 +291,7 @@
   <div id="picks-container" class="picks-grid"></div>
 </div>
 
+<!-- ══════════════ SUPER CHIPS ══════════════ -->
 <div id="tab-chips" class="page">
   <div class="section-head">
     <h2>Super Chips ⚡</h2>
@@ -583,6 +583,7 @@ function calculateTeamPoints(goalsFor, goalsAgainst) {
   return points;
 }
 
+// ── FIXED SCORING ENGINE ──
 function computePoints(player, stage) {
   const picks = stage === "group" ? GROUP_PICKS[player] : KO_PICKS[player];
   if (!picks) return 0;
@@ -600,23 +601,17 @@ function computePoints(player, stage) {
     const score = getMatchScore(match.id);
     if (!score) continue;
 
-    // Get Super Chip details
-    const chipStage = isGroupPhase ? "group" : "ko";
-    const chipData = state.chips[player];
-    const chipMatch = chipData ? chipData[chipStage] : null;
-    const chipTeam = chipData ? chipData[chipStage + 'Team'] : null;
-
-    // 1. Start with the teams the player actually owns
+    const chipData = state.chips[player] || {};
     let teamsToEvaluate = [...selectedTeams];
 
-    // 2. NEW RULE (KO Stage): Add the chipped team to the evaluation list even if they don't own it
-    if (!isGroupPhase && chipMatch === match.id && chipTeam) {
-      if (!teamsToEvaluate.includes(chipTeam)) {
-        teamsToEvaluate.push(chipTeam);
+    // INJECT EXTERNAL TEAM FOR KNOCKOUT CHIP ONLY
+    if (!isGroupPhase && chipData.ko === match.id && chipData.koTeam) {
+      if (!teamsToEvaluate.includes(chipData.koTeam)) {
+        teamsToEvaluate.push(chipData.koTeam);
       }
     }
 
-    // 3. Calculate points for the relevant teams playing in this match
+    // CALCULATE POINTS
     for (const team of teamsToEvaluate) {
       let goalsFor, goalsAgainst;
       
@@ -627,14 +622,22 @@ function computePoints(player, stage) {
         goalsFor = score.away; 
         goalsAgainst = score.home;
       } else {
-        continue; // This team is not playing in this match
+        continue;
       }
 
       let teamPoints = calculateTeamPoints(goalsFor, goalsAgainst);
       
-      // Apply 2x Multiplier if this is the exact match and team they chipped
-      if (chipMatch === match.id && chipTeam === team) {
-        teamPoints *= 2;
+      // APPLY EXACT CHIP MULTIPLIERS BASED ON STAGE
+      if (isGroupPhase) {
+        // Group Stage Legacy Rule: If match ID matches, double the score (they own the team)
+        if (chipData.group === match.id) {
+          teamPoints *= 2;
+        }
+      } else {
+        // Knockout Rule: Match ID AND Explicitly Chosen Team must BOTH match
+        if (chipData.ko === match.id && chipData.koTeam === team) {
+          teamPoints *= 2;
+        }
       }
       
       total += teamPoints;
@@ -647,6 +650,7 @@ const PENALTIES = {
   "Pavan Jami": -10, "Kireet": 10
 };
 
+// ── FIXED RANKING SORTER ──
 function getRankedPlayers(stage) {
   return [...PLAYERS]
     .map(player => {
@@ -658,14 +662,14 @@ function getRankedPlayers(stage) {
       const total = gsCarry + koTotal;
       return {
         name: player,
-        gsRaw: gsRaw, // Full raw points
-        gsCarry: gsCarry, // 50% points carried
+        gsRaw: gsRaw,      // Full points strictly for the GS Tab
+        gsCarry: gsCarry,  // Halved 50% points strictly for the KO Tab carryover
         ko: koTotal,
-        pts: total
+        pts: total         // Grand Total (50% GS + KO) strictly for KO Tab Sorting
       };
     })
     .sort((a, b) => {
-      // Dynamic Sorting Metric Check
+      // Separates Group Stage ranking lock from Knockout total ranking.
       if (stage === 'group') {
         if (b.gsRaw !== a.gsRaw) return b.gsRaw - a.gsRaw;
       } else {
@@ -725,7 +729,6 @@ function renderLeaderboard() {
       chipBadgeClass = isPlayed ? 'chip-badge used' : 'chip-badge';
     }
 
-    // Dynamic View Point Assignment
     const displayTotal = isGroup ? r.gsRaw : r.pts;
 
     return `<tr class="${rankClass}">
@@ -736,7 +739,7 @@ function renderLeaderboard() {
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
       ${p3 !== null ? `<td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>` : ''}
-      ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.gsCarry)}">${fmt(r.gsCarry)}</span></td>` : ''}
+      ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.gsCarry)}" title="50% of Group Stage points carried forward">${fmt(r.gsCarry)}</span></td>` : ''}
       ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.ko)}">${fmt(r.ko)}</span></td>` : ''}
       <td style="text-align:right"><span class="pts-cell ${cls(displayTotal)}">${fmt(displayTotal)}</span></td>
     </tr>`;
@@ -857,50 +860,76 @@ function renderPicks() {
   }).join('');
 }
 
-// ── SUPER CHIPS ──
+// ── FIXED SUPER CHIP ADMIN PANEL ──
 function renderChips() {
   const container = document.getElementById('chips-container');
   const groupMatches = MATCH_SCHEDULE.filter(m => m.stage === 'group');
   const koMatches = MATCH_SCHEDULE.filter(m => ['r32','r16','qf','sf','final'].includes(m.stage));
 
-  const matchOpts = (matches) =>
+  const matchOpts = (matches, selectedId) =>
     `<option value="">— No chip yet —</option>` +
-    matches.map(m => `<option value="${m.id}">${m.label}: ${m.home} vs ${m.away}</option>`).join('');
+    matches.map(m => `<option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${m.label}: ${m.home} vs ${m.away}</option>`).join('');
+
+  const teamOptsForMatch = (matchId, selectedTeam) => {
+    const m = MATCH_SCHEDULE.find(x => x.id === matchId);
+    if (!m) return `<option value="">— Pick match first —</option>`;
+    return `<option value="">— Pick a team —</option>` +
+      [m.home, m.away].map(t => `<option value="${t}" ${t === selectedTeam ? 'selected' : ''}>${flag(t)} ${t}</option>`).join('');
+  };
 
   container.innerHTML = PLAYERS.map(p => {
     const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
+    const chip = state.chips[p] || {};
+    const gMatchId = chip.group || '';
+    const kMatchId = chip.ko || '';
     return `<div class="chip-card">
       <div class="chip-card-name">⚡ ${p}</div>
+      
       <div class="chip-slot">
-        <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${pid}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(groupMatches)}
+        <div class="chip-slot-label">Group Stage Chip — Match Only</div>
+        <select class="chip-select" id="chip-g-${pid}" onchange="saveGroupChip('${p}',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${matchOpts(groupMatches, gMatchId)}
         </select>
       </div>
-      <div class="chip-slot">
-        <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${pid}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(koMatches)}
+      
+      <div class="chip-slot" style="margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border);">
+        <div class="chip-slot-label">Knockout Chip — Select Match</div>
+        <select class="chip-select" id="chip-k-${pid}" onchange="onKoChipMatchChange('${p}',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${matchOpts(koMatches, kMatchId)}
+        </select>
+        <div class="chip-slot-label" style="margin-top:8px">Knockout Chip — Specific Team to Double</div>
+        <select class="chip-select" id="chip-k-team-${pid}" onchange="saveKoChipTeam('${p}',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${teamOptsForMatch(kMatchId, chip.koTeam)}
         </select>
       </div>
+      
     </div>`;
   }).join('');
-
-  PLAYERS.forEach(p => {
-    const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
-    const chip = state.chips[p] || {};
-    const gEl = document.getElementById('chip-g-' + pid);
-    const kEl = document.getElementById('chip-k-' + pid);
-    if (gEl && chip.group) gEl.value = chip.group;
-    if (kEl && chip.ko)    kEl.value = chip.ko;
-  });
 }
 
-function saveChip(player, type, matchId) {
+function saveGroupChip(player, matchId) {
   if (!state.chips[player]) state.chips[player] = {};
-  state.chips[player][type] = matchId || null;
+  state.chips[player].group = matchId || null;
   saveState();
-  showToast('Chip saved ⚡');
+  showToast('GS Chip saved ⚡');
+  renderLeaderboard();
+}
+
+function onKoChipMatchChange(player, matchId) {
+  if (!state.chips[player]) state.chips[player] = {};
+  state.chips[player].ko = matchId || null;
+  state.chips[player].koTeam = null; // Clears the team specifically when the match changes
+  saveState();
+  showToast('Match selected — now pick a team ⚡');
+  renderChips();   
+  renderLeaderboard();
+}
+
+function saveKoChipTeam(player, team) {
+  if (!state.chips[player]) state.chips[player] = {};
+  state.chips[player].koTeam = team || null;
+  saveState();
+  showToast('KO Chip locked in ⚡');
   renderLeaderboard();
 }
 
@@ -987,5 +1016,3 @@ initFirebase();
 </script>
 </body>
 </html>
-
-```
