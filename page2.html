@@ -591,32 +591,52 @@ function computePoints(player, stage) {
   let total = 0;
 
   for (const match of MATCH_SCHEDULE) {
+    const isGroupPhase = match.stage === "group";
     const isRelevantMatch = stage === "group"
-        ? match.stage === "group"
+        ? isGroupPhase
         : ["r32", "r16", "qf", "sf", "final"].includes(match.stage);
 
     if (!isRelevantMatch) continue;
     const score = getMatchScore(match.id);
     if (!score) continue;
 
-    for (const team of selectedTeams) {
+    // Get Super Chip details
+    const chipStage = isGroupPhase ? "group" : "ko";
+    const chipData = state.chips[player];
+    const chipMatch = chipData ? chipData[chipStage] : null;
+    const chipTeam = chipData ? chipData[chipStage + 'Team'] : null;
+
+    // 1. Start with the teams the player actually owns
+    let teamsToEvaluate = [...selectedTeams];
+
+    // 2. NEW RULE (KO Stage): Add the chipped team to the evaluation list even if they don't own it
+    if (!isGroupPhase && chipMatch === match.id && chipTeam) {
+      if (!teamsToEvaluate.includes(chipTeam)) {
+        teamsToEvaluate.push(chipTeam);
+      }
+    }
+
+    // 3. Calculate points for the relevant teams playing in this match
+    for (const team of teamsToEvaluate) {
       let goalsFor, goalsAgainst;
+      
       if (team === match.home) {
-        goalsFor = score.home; goalsAgainst = score.away;
+        goalsFor = score.home; 
+        goalsAgainst = score.away;
       } else if (team === match.away) {
-        goalsFor = score.away; goalsAgainst = score.home;
+        goalsFor = score.away; 
+        goalsAgainst = score.home;
       } else {
-        continue;
+        continue; // This team is not playing in this match
       }
 
       let teamPoints = calculateTeamPoints(goalsFor, goalsAgainst);
-      const chipStage = match.stage === "group" ? "group" : "ko";
-      const chipData = state.chips[player];
-      const chipMatch = chipData ? chipData[chipStage] : null;
-
-      if (chipMatch === match.id) {
+      
+      // Apply 2x Multiplier if this is the exact match and team they chipped
+      if (chipMatch === match.id && chipTeam === team) {
         teamPoints *= 2;
       }
+      
       total += teamPoints;
     }
   }
