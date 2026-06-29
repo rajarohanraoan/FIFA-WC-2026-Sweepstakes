@@ -1005,28 +1005,47 @@ function renderChips() {
   const groupMatches = MATCH_SCHEDULE.filter(m => m.stage === 'group');
   const koMatches = MATCH_SCHEDULE.filter(m => ['r32','r16','qf','sf','final'].includes(m.stage));
 
-  const matchOpts = (matches) =>
+  const matchOpts = (matches, selectedId) =>
     `<option value="">— No chip yet —</option>` +
-    matches.map(m => `<option value="${m.id}">${m.label}: ${m.home} vs ${m.away}</option>`).join('');
+    matches.map(m => `<option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${m.label}: ${m.home} vs ${m.away}</option>`).join('');
+
+  const teamOptsForMatch = (matchId, selectedTeam) => {
+    const m = MATCH_SCHEDULE.find(x => x.id === matchId);
+    if (!m) return `<option value="">— Pick match first —</option>`;
+    return `<option value="">— Pick a team —</option>` +
+      [m.home, m.away].map(t => `<option value="${t}" ${t === selectedTeam ? 'selected' : ''}>${flag(t)} ${t}</option>`).join('');
+  };
 
   container.innerHTML = PLAYERS.map(p => {
     const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
+    const chip = state.chips[p] || {};
+    const gMatchId = chip.group || '';
+    const kMatchId = chip.ko || '';
     return `<div class="chip-card">
       <div class="chip-card-name">⚡ ${p}</div>
       <div class="chip-slot">
-        <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${pid}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(groupMatches)}
+        <div class="chip-slot-label">Group Stage Chip — Match</div>
+        <select class="chip-select" id="chip-g-${pid}" onchange="onChipMatchChange('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${matchOpts(groupMatches, gMatchId)}
+        </select>
+        <div class="chip-slot-label" style="margin-top:8px">Group Stage Chip — Team</div>
+        <select class="chip-select" id="chip-g-team-${pid}" onchange="saveChipTeam('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${teamOptsForMatch(gMatchId, chip.groupTeam)}
         </select>
       </div>
       <div class="chip-slot">
-        <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${pid}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(koMatches)}
+        <div class="chip-slot-label">Knockout Chip — Match</div>
+        <select class="chip-select" id="chip-k-${pid}" onchange="onChipMatchChange('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${matchOpts(koMatches, kMatchId)}
+        </select>
+        <div class="chip-slot-label" style="margin-top:8px">Knockout Chip — Team</div>
+        <select class="chip-select" id="chip-k-team-${pid}" onchange="saveChipTeam('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${teamOptsForMatch(kMatchId, chip.koTeam)}
         </select>
       </div>
     </div>`;
   }).join('');
+}
 
   // Restore saved chip selections
   PLAYERS.forEach(p => {
@@ -1039,11 +1058,22 @@ function renderChips() {
   });
 }
 
-function saveChip(player, type, matchId) {
+function onChipMatchChange(player, type, matchId) {
   if (!state.chips[player]) state.chips[player] = {};
   state.chips[player][type] = matchId || null;
+  // Changing the match clears any previously chosen team for that slot
+  state.chips[player][type + 'Team'] = null;
   saveState();
-  showToast('Chip saved ⚡');
+  showToast('Match selected — now pick a team ⚡');
+  renderChips();   // re-render so the team dropdown populates with the new match's teams
+  renderLeaderboard();
+}
+
+function saveChipTeam(player, type, team) {
+  if (!state.chips[player]) state.chips[player] = {};
+  state.chips[player][type + 'Team'] = team || null;
+  saveState();
+  showToast('Chip locked in ⚡');
   renderLeaderboard();
 }
 
