@@ -20,11 +20,11 @@
   .topbar {
     background: var(--ink2);
     border-bottom: 1px solid var(--border);
-    padding: 12px 24px; /* Added vertical padding */
+    padding: 12px 24px;
     display: flex; align-items: center; justify-content: space-between;
-    min-height: 56px; /* Changed height to min-height */
-    flex-wrap: wrap; /* Allows stacking gracefully on tiny screens */
-    gap: 12px; /* Prevents text elements from colliding if they stack */
+    min-height: 56px; 
+    flex-wrap: wrap; 
+    gap: 12px; 
     position: sticky; top: 0; z-index: 100;
   }
   .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold-light); letter-spacing: 2px; }
@@ -218,12 +218,8 @@
 
  /* ── RESPONSIVE ── */
   @media (max-width: 700px) {
-    .topbar {
-      position: relative; /* Changes header from sticky to normal flow on mobile */
-    }
-    .page {
-      padding: 16px 16px; /* Gives the main content more breathing room on mobile */
-    }
+    .topbar { position: relative; }
+    .page { padding: 16px 16px; }
     .match-card { grid-template-columns: 1fr 1fr; gap: 12px; }
     .score-inputs { grid-column: 1 / -1; justify-content: center; }
     .save-btn { grid-column: 1 / -1; width: 100%; text-align: center; }
@@ -315,7 +311,6 @@ const PLAYERS = [
   "Pavan Jami","Rahul","Ramya","Rohan","Setu","Sriram","Sushmit","Vinayak"
 ];
 
-// Group stage picks (Pick 1 = top tier, Pick 2 & 3 = lower tier)
 const GROUP_PICKS = {
   "Anand":          { p1: "Netherlands",  p2: "Qatar",         p3: "New Zealand"},
   "Hariprasad":     { p1: "Brazil",       p2: "Jordan",        p3: "Cape Verde" },
@@ -335,7 +330,6 @@ const GROUP_PICKS = {
   "Vinayak":        { p1: "Belgium",      p2: "Ghana",         p3:"Czechia"},
 };
 
-// Knockout picks
 const KO_PICKS = {
   "Anand":          { p1: "Paraguay",     p2: "Austria"},
   "Hariprasad":     { p1: "Mexico",       p2: "South Africa" },
@@ -355,7 +349,6 @@ const KO_PICKS = {
   "Vinayak":        { p1: "Algeria",      p2: "Senegal" },
 };
 
-// Predictions
 const PREDICTIONS = {
   "Anand":          { boot: "Kylian Mbappé - 10",      glove: "Unai Simon - 10",     winner: "Spain - 10" },
   "Hariprasad":     { boot: "Kylian Mbappé - 10",      glove: "Unai Simon - 5",      winner: "France - 5" },
@@ -375,65 +368,23 @@ const PREDICTIONS = {
   "Vinayak":        { boot: "Kylian Mbappé - 2",       glove: "Manuel Neuer - 1",    winner: "Spain - 3" },
 };
 
-// Country flag emoji lookup (subset)
 const FLAGS = {
-  "France":"🇫🇷",
-  "Spain":"🇪🇸",
-  "Argentina":"🇦🇷",
-  "England":"🏴",
-  "Portugal":"🇵🇹",
-  "Brazil":"🇧🇷",
-  "Netherlands":"🇳🇱",
-  "Morocco":"🇲🇦",
-  "Belgium":"🇧🇪",
-  "Germany":"🇩🇪",
-  "Croatia":"🇭🇷",
-  "Colombia":"🇨🇴",
-  "Senegal":"🇸🇳",
-  "Mexico":"🇲🇽",
-  "United States":"🇺🇸",
-  "Uruguay":"🇺🇾",
-  "Japan":"🇯🇵",
-  "Switzerland":"🇨🇭",
-  "Iran":"🇮🇷",
-  "Türkiye":"🇹🇷",
-  "Ecuador":"🇪🇨",
-  "Austria":"🇦🇹",
-  "South Korea":"🇰🇷",
-  "Australia":"🇦🇺",
-  "Algeria":"🇩🇿",
-  "Egypt":"🇪🇬",
-  "Canada":"🇨🇦",
-  "Norway":"🇳🇴",
-  "Panama":"🇵🇦",
-  "Côte d'Ivoire":"🇨🇮",
-  "Sweden":"🇸🇪",
-  "Paraguay":"🇵🇾",
-  "Czechia":"🇨🇿",
-  "Scotland":"🏴",
-  "Tunisia":"🇹🇳",
-  "DR Congo":"🇨🇩",
-  "Uzbekistan":"🇺🇿",
-  "Qatar":"🇶🇦",
-  "Iraq":"🇮🇶",
-  "South Africa":"🇿🇦",
-  "Saudi Arabia":"🇸🇦",
-  "Jordan":"🇯🇴",
-  "Bosnia and Herzegovina":"🇧🇦",
-  "Cape Verde":"🇨🇻",
-  "Ghana":"🇬🇭",
-  "Curaçao":"🇨🇼",
-  "Haiti":"🇭🇹",
-  "New Zealand":"🇳🇿"
+  "France":"🇫🇷", "Spain":"🇪🇸", "Argentina":"🇦🇷", "England":"🏴", "Portugal":"🇵🇹",
+  "Brazil":"🇧🇷", "Netherlands":"🇳🇱", "Morocco":"🇲🇦", "Belgium":"🇧🇪", "Germany":"🇩🇪",
+  "Croatia":"🇭🇷", "Colombia":"🇨🇴", "Senegal":"🇸🇳", "Mexico":"🇲🇽", "United States":"🇺🇸",
+  "Uruguay":"🇺🇾", "Japan":"🇯🇵", "Switzerland":"🇨🇭", "Iran":"🇮🇷", "Türkiye":"🇹🇷",
+  "Ecuador":"🇪🇨", "Austria":"🇦🇹", "South Korea":"🇰🇷", "Australia":"🇦🇺", "Algeria":"🇩🇿",
+  "Egypt":"🇪🇬", "Canada":"🇨🇦", "Norway":"🇳🇴", "Panama":"🇵🇦", "Côte d'Ivoire":"🇨🇮",
+  "Sweden":"🇸🇪", "Paraguay":"🇵🇾", "Czechia":"🇨🇿", "Scotland":"🏴", "Tunisia":"🇹🇳",
+  "DR Congo":"🇨🇩", "Uzbekistan":"🇺🇿", "Qatar":"🇶🇦", "Iraq":"🇮🇶", "South Africa":"🇿🇦",
+  "Saudi Arabia":"🇸🇦", "Jordan":"🇯🇴", "Bosnia and Herzegovina":"🇧🇦", "Cape Verde":"🇨🇻",
+  "Ghana":"🇬🇭", "Curaçao":"🇨🇼", "Haiti":"🇭🇹", "New Zealand":"🇳🇿"
 };
 
 function flag(team) {
   return FLAGS[team] || "🏳️";
 }
 
-// ── MATCH SCHEDULE (Group Stage + KO template) ──
-// stage: 'group' | 'r32' | 'r16' | 'qf' | 'sf' | 'final'
-// multiplier per new rules: r32=1, r16=1, qf=1, sf=1, final=1
 const MULTIPLIERS = { group:1, r32:1, r16:1, qf:1, sf:1, final:1 };
 
 const MATCH_SCHEDULE = [
@@ -521,7 +472,7 @@ const MATCH_SCHEDULE = [
   { id: "71", stage: "group", md: 3, home: "Panama",         away: "England",                 label: "Group L · MD3" },
   { id: "72", stage: "group", md: 3, home: "Croatia",        away: "Ghana",                   label: "Group L · MD3" },
  
-   // Knockout template (teams TBD once draw is done)
+   // Knockout template
   { id:"r32_1", stage:"r32",  md:1, home:"South Africa",     away:"Canada",         label:"R32 · Match 1" },
   { id:"r32_2", stage:"r32",  md:1, home:"Brazil",           away:"Japan",          label:"R32 · Match 2" },
   { id:"r32_3", stage:"r32",  md:1, home:"Germany",          away:"Paraguay",       label:"R32 · Match 3" },
@@ -532,15 +483,14 @@ const MATCH_SCHEDULE = [
   { id:"r32_8", stage:"r32",  md:1, home:"England",          away:"DR Congo",       label:"R32 · Match 8" },
   { id:"r32_9", stage:"r32",  md:1, home:"Belgium",          away:"Senegal",        label:"R32 · Match 9" },
   { id:"r32_10", stage:"r32",  md:1, home:"United States",   away:"Bosnia and Herzegovina", label:"R32 · Match 10" },
-  { id:"r32_11", stage:"r32",  md:1, home:"Spain",           away:"Austria",       label:"R32 · Match 11" },
-  { id:"r32_12", stage:"r32",  md:1, home:"Portugal",        away:"Croatia",       label:"R32 · Match 12" },
-  { id:"r32_13", stage:"r32",  md:1, home:"Switzerland",     away:"Algeria",       label:"R32 · Match 13" },
-  { id:"r32_14", stage:"r32",  md:1, home:"Australia",       away:"Egypt",         label:"R32 · Match 14" },
-  { id:"r32_15", stage:"r32",  md:1, home:"Argentina",       away:"Cape Verde",    label:"R32 · Match 15" },
-  { id:"r32_16", stage:"r32",  md:1, home:"Colombia",        away:"Ghana",         label:"R32 · Match 16" },
-
-
-  { id:"r16_1",  stage:"r16",   md:1, home:"Canada",        away:"Morocco",         label:"R16 · Match 1" },
+  { id:"r32_11", stage:"r32",  md:1, home:"Spain",           away:"Austria",        label:"R32 · Match 11" },
+  { id:"r32_12", stage:"r32",  md:1, home:"Portugal",        away:"Croatia",        label:"R32 · Match 12" },
+  { id:"r32_13", stage:"r32",  md:1, home:"Switzerland",     away:"Algeria",        label:"R32 · Match 13" },
+  { id:"r32_14", stage:"r32",  md:1, home:"Australia",       away:"Egypt",          label:"R32 · Match 14" },
+  { id:"r32_15", stage:"r32",  md:1, home:"Argentina",       away:"Cape Verde",     label:"R32 · Match 15" },
+  { id:"r32_16", stage:"r32",  md:1, home:"Colombia",        away:"Ghana",          label:"R32 · Match 16" },
+ 
+{ id:"r16_1",  stage:"r16",   md:1, home:"Canada",        away:"Morocco",         label:"R16 · Match 1" },
   { id:"r16_2",  stage:"r16",   md:2, home:"Paraguay",      away:"France",          label:"R16 · Match 2" },
   { id:"r16_3",  stage:"r16",   md:3, home:"Brazil",        away:"Norway",          label:"R16 · Match 3" },
   { id:"r16_4",  stage:"r16",   md:4, home:"Mexico",        away:"England",         label:"R16 · Match 4" },
@@ -563,13 +513,11 @@ const MATCH_SCHEDULE = [
  
 // ── STATE ──
 let state = {
-  scores: {},    // { matchId: { home: n, away: n } }
-  chips: {},     // { player: { group: matchId|null, ko: matchId|null } }
+  scores: {},
+  chips: {},
   currentStage: 'group',
 };
 
-// ── FIREBASE CONFIG ──
-// Paste your Firebase config here after creating a project
 const firebaseConfig = {
   apiKey: "AIzaSyADUAFFZDYffBiVFVW8xr234k96vzMosiY",
   authDomain: "wc-sweepstakes-2026.firebaseapp.com",
@@ -589,32 +537,22 @@ function initFirebase() {
     db = firebase.database(app);
     stateRef = db.ref('wc26_state');
 
-    // Listen for any change and re-render everything live
     stateRef.on('value', snap => {
       const data = snap.val();
       if (data) {
-
-  state = {
-    scores: data.scores || {},
-    chips: data.chips || {},
-    currentStage: 'group'
-  };
-
-} else {
-
-  stateRef.set({
-    scores: {},
-    chips: {}
-  });
-
-}
-     console.log("STATE", state);
+        state = {
+          scores: data.scores || {},
+          chips: data.chips || {},
+          currentStage: state.currentStage || 'group'
+        };
+      } else {
+        stateRef.set({ scores: {}, chips: {} });
+      }
       renderLeaderboard();
       renderMatches();
       renderChips();
     });
 
-    // Connection indicator
     db.ref('.info/connected').on('value', snap => {
       const dot = document.getElementById('conn-dot');
       const lbl = document.getElementById('conn-label');
@@ -635,9 +573,7 @@ function initFirebase() {
   }
 }
 
-function loadState() {
-  // No-op — Firebase listener handles this
-}
+function loadState() {}
 
 function saveState() {
   if (stateRef) {
@@ -646,168 +582,114 @@ function saveState() {
   }
 }
 
-// ── SCORING ENGINE ──
-// ─────────────────────────────────────────────
-// SWEEPSTAKES SCORING ENGINE
-// Rules:
-// Win = +3
-// Draw = +1
-// Loss = 0
-// +1 per goal scored
-// -1 per goal conceded
-// +2 clean sheet
-// No stage multipliers
-// No home/away advantage
-// Super Chip doubles points for one selected match
-// Penalty shootouts DO NOT affect scoring
-// ─────────────────────────────────────────────
-
 function getMatchScore(matchId) {
-
-  if (
-    !state ||
-    !state.scores ||
-    typeof state.scores !== 'object'
-  ) {
-    return null;
-  }
-
+  if (!state || !state.scores || typeof state.scores !== 'object') return null;
   return state.scores[matchId] || null;
 }
 
 function calculateTeamPoints(goalsFor, goalsAgainst) {
-
   let points = 0;
-
-  // Match result
-  if (goalsFor > goalsAgainst) {
-    points += 3;
-  } else if (goalsFor === goalsAgainst) {
-    points += 1;
-  }
-  // Loss = 0
-
-  // Goals scored
+  if (goalsFor > goalsAgainst) points += 3;
+  else if (goalsFor === goalsAgainst) points += 1;
   points += goalsFor;
-
-  // Goals conceded
   points -= goalsAgainst;
-
-  // Clean sheet
-  if (goalsAgainst === 0) {
-    points += 2;
-  }
-
+  if (goalsAgainst === 0) points += 2;
   return points;
 }
 
+// ── FIXED SCORING ENGINE ──
 function computePoints(player, stage) {
-
-  const picks =
-    stage === "group"
-      ? GROUP_PICKS[player]
-      : KO_PICKS[player];
-
+  const picks = stage === "group" ? GROUP_PICKS[player] : KO_PICKS[player];
   if (!picks) return 0;
 
   const selectedTeams = [picks.p1, picks.p2, picks.p3].filter(Boolean);
   let total = 0;
 
   for (const match of MATCH_SCHEDULE) {
-
-    const isRelevantMatch =
-      stage === "group"
-        ? match.stage === "group"
+    const isGroupPhase = match.stage === "group";
+    const isRelevantMatch = stage === "group"
+        ? isGroupPhase
         : ["r32", "r16", "qf", "sf", "final"].includes(match.stage);
 
     if (!isRelevantMatch) continue;
-
     const score = getMatchScore(match.id);
-
     if (!score) continue;
 
-    for (const team of selectedTeams) {
+    const chipData = state.chips[player] || {};
+    let teamsToEvaluate = [...selectedTeams];
 
-      let goalsFor;
-      let goalsAgainst;
+    // INJECT EXTERNAL TEAM FOR KNOCKOUT CHIP ONLY
+    if (!isGroupPhase && chipData.ko === match.id && chipData.koTeam) {
+      if (!teamsToEvaluate.includes(chipData.koTeam)) {
+        teamsToEvaluate.push(chipData.koTeam);
+      }
+    }
 
+    // CALCULATE POINTS
+    for (const team of teamsToEvaluate) {
+      let goalsFor, goalsAgainst;
+      
       if (team === match.home) {
-
-        goalsFor = score.home;
+        goalsFor = score.home; 
         goalsAgainst = score.away;
-
       } else if (team === match.away) {
-
-        goalsFor = score.away;
+        goalsFor = score.away; 
         goalsAgainst = score.home;
-
       } else {
-
         continue;
-
       }
 
-      let teamPoints =
-        calculateTeamPoints(goalsFor, goalsAgainst);
-
-      // Super Chip
-      const chipStage =
-        match.stage === "group"
-          ? "group"
-          : "ko";
-
-      const chipData = state.chips[player];
-      const chipMatch =
-        chipData
-          ? chipData[chipStage]
-          : null;
-
-      if (chipMatch === match.id) {
-        teamPoints *= 2;
+      let teamPoints = calculateTeamPoints(goalsFor, goalsAgainst);
+      
+      // APPLY EXACT CHIP MULTIPLIERS BASED ON STAGE
+      if (isGroupPhase) {
+        // Group Stage Legacy Rule: If match ID matches, double the score (they own the team)
+        if (chipData.group === match.id) {
+          teamPoints *= 2;
+        }
+      } else {
+        // Knockout Rule: Match ID AND Explicitly Chosen Team must BOTH match
+        if (chipData.ko === match.id && chipData.koTeam === team) {
+          teamPoints *= 2;
+        }
       }
-
+      
       total += teamPoints;
     }
   }
-
   return total;
 }
 
-// ── PENALTIES ──
-// Manual point adjustment applied ONLY to Knockout totals (never Group Stage).
 const PENALTIES = {
-  "Pavan Jami": -10, "Kireet": 10,  // replace with the actual player name and amount
+  "Pavan Jami": -10, "Kireet": 10
 };
 
+// ── FIXED RANKING SORTER ──
 function getRankedPlayers(stage) {
-
-  // GS-carried = 50% of Group Stage points (carried forward into Knockout)
-  // KO         = raw Knockout points + any manual penalty/bonus
-  // Total      = GS-carried + KO (penalty already folded into KO)
   return [...PLAYERS]
     .map(player => {
-      const gsRaw    = computePoints(player, 'group');
-      const koRaw    = computePoints(player, 'knockout');
-      const gsCarry  = gsRaw / 2;   // 50% of GS points carried forward — penalty-free
-      const penalty  = PENALTIES[player] || 0;
-      const koTotal  = koRaw + penalty;   // penalty hits KO only
-      const total    = gsCarry + koTotal;
+      const gsRaw = computePoints(player, 'group');
+      const koRaw = computePoints(player, 'knockout');
+      const gsCarry = gsRaw / 2;
+      const penalty = PENALTIES[player] || 0;
+      const koTotal = koRaw + penalty;
+      const total = gsCarry + koTotal;
       return {
         name: player,
-        gs: gsCarry,
+        gsRaw: gsRaw,      // Full points strictly for the GS Tab
+        gsCarry: gsCarry,  // Halved 50% points strictly for the KO Tab carryover
         ko: koTotal,
-        penalty: penalty,
-        pts: total
+        pts: total         // Grand Total (50% GS + KO) strictly for KO Tab Sorting
       };
     })
     .sort((a, b) => {
-
-      if (b.pts !== a.pts) {
-        return b.pts - a.pts;
+      // Separates Group Stage ranking lock from Knockout total ranking.
+      if (stage === 'group') {
+        if (b.gsRaw !== a.gsRaw) return b.gsRaw - a.gsRaw;
+      } else {
+        if (b.pts !== a.pts) return b.pts - a.pts;
       }
-
       return a.name.localeCompare(b.name);
-
     });
 }
 
@@ -823,8 +705,6 @@ function setStage(s, btn) {
 
 function renderLeaderboard() {
   const ranked = getRankedPlayers(currentStage);
-
-  // Format a number that may have a .5 fraction (from 50% carry)
   const fmt = (n) => {
     const sign = n > 0 ? '+' : '';
     const abs = Math.abs(n);
@@ -832,10 +712,8 @@ function renderLeaderboard() {
     return (n < 0 ? '-' : sign) + s;
   };
   const cls = (n) => n > 0 ? 'pts-pos' : n < 0 ? 'pts-neg' : 'pts-zero';
-
   const isGroup = currentStage === 'group';
 
-// Toggle Visibility and Wording of Table Headers
   const th3 = document.getElementById('th-p3');
   const thGs = document.getElementById('th-gs');
   const thKo = document.getElementById('th-ko');
@@ -844,11 +722,7 @@ function renderLeaderboard() {
   if (th3) th3.style.display = isGroup ? '' : 'none';
   if (thGs) thGs.style.display = isGroup ? 'none' : '';
   if (thKo) thKo.style.display = isGroup ? 'none' : '';
-  
-  // Changes the header text based on the active stage tab
-  if (thTotal) {
-    thTotal.textContent = isGroup ? 'Points' : 'Total Points';
-  }
+  if (thTotal) thTotal.textContent = isGroup ? 'Points' : 'Total Points';
 
   const tbody = document.getElementById('lb-body');
   tbody.innerHTML = ranked.map((r, i) => {
@@ -865,16 +739,11 @@ function renderLeaderboard() {
     let chipBadgeClass = 'chip-badge';
     if (chipMatchId) {
       const isPlayed = state.scores[chipMatchId] !== undefined;
-      const stagePrefix = isGroup ? 'GS' : 'KO';
-      chipBadge = isPlayed
-        ? `⚡ ${stagePrefix} Chip - Used`
-        : `⚡ ${stagePrefix} Chip - Activated`;
+      chipBadge = isPlayed ? `⚡ ${isGroup?'GS':'KO'} Chip - Used` : `⚡ ${isGroup?'GS':'KO'} Chip - Activated`;
       chipBadgeClass = isPlayed ? 'chip-badge used' : 'chip-badge';
     }
 
-    // FIX LOGIC: Display actual full points during Group Stage view, 
-    // but show the 50% half-points carryover rule strictly in Knockout view.
-    const displayTotal = isGroup ? (r.gs * 2) : r.pts;
+    const displayTotal = isGroup ? r.gsRaw : r.pts;
 
     return `<tr class="${rankClass}">
       <td><span class="rank-num">${medal || (i+1)}</span></td>
@@ -884,15 +753,12 @@ function renderLeaderboard() {
       <td><span style="font-size:13px;color:var(--cream)">${p1}</span></td>
       <td><span style="font-size:13px;color:var(--cream)">${p2}</span></td>
       ${p3 !== null ? `<td><span style="font-size:13px;color:var(--cream)">${p3}</span></td>` : ''}
-      
-      ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.gs)}" title="50% of Group Stage points carried forward">${fmt(r.gs)}</span></td>` : ''}
+      ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.gsCarry)}" title="50% of Group Stage points carried forward">${fmt(r.gsCarry)}</span></td>` : ''}
       ${!isGroup ? `<td style="text-align:right"><span class="pts-sub ${cls(r.ko)}">${fmt(r.ko)}</span></td>` : ''}
-      
       <td style="text-align:right"><span class="pts-cell ${cls(displayTotal)}">${fmt(displayTotal)}</span></td>
     </tr>`;
   }).join('');
 }
-
 
 // ── MATCH ENTRY ──
 function renderMatches() {
@@ -920,16 +786,14 @@ function renderMatches() {
     for (const m of matches) {
       const sc = state.scores[m.id] || { home: '', away: '' };
       const saved = state.scores[m.id] !== undefined;
-      // find owner(s) of each team
       const homeOwners = PLAYERS.filter(p => {
-  const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
-  return pk && (pk.p1 === m.home || pk.p2 === m.home || pk.p3 === m.home);
-}).join(', ');
-const awayOwners = PLAYERS.filter(p => {
-  const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
-  return pk && (pk.p1 === m.away || pk.p2 === m.away || pk.p3 === m.away);
-}).join(', ');
-
+        const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
+        return pk && (pk.p1 === m.home || pk.p2 === m.home || pk.p3 === m.home);
+      }).join(', ');
+      const awayOwners = PLAYERS.filter(p => {
+        const pk = stg === 'group' ? GROUP_PICKS[p] : KO_PICKS[p];
+        return pk && (pk.p1 === m.away || pk.p2 === m.away || pk.p3 === m.away);
+      }).join(', ');
 
       html += `<div class="match-card" id="card-${m.id}">
         <div class="match-team-side">
@@ -966,7 +830,6 @@ function saveScore(matchId) {
   if (h.value === '' || a.value === '') { showToast('Enter both scores!', '#E74C3C'); return; }
   state.scores[matchId] = { home: parseInt(h.value), away: parseInt(a.value) };
   saveState();
-  // Update button group to show Save (saved state) + Reset
   const card = document.getElementById('card-' + matchId);
   const btnGroup = card.querySelector('.btn-group');
   btnGroup.innerHTML = `
@@ -979,19 +842,16 @@ function saveScore(matchId) {
 function resetScore(matchId) {
   delete state.scores[matchId];
   saveState();
-  // Clear the inputs and revert to unsaved state
   const h = document.getElementById('h-' + matchId);
   const a = document.getElementById('a-' + matchId);
-  if (h) { h.value = ''; }
-  if (a) { a.value = ''; }
-  // Revert button group to just Save
+  if (h) h.value = '';
+  if (a) a.value = '';
   const card = document.getElementById('card-' + matchId);
   const btnGroup = card.querySelector('.btn-group');
   btnGroup.innerHTML = `<button class="save-btn" onclick="saveScore('${matchId}')">Save</button>`;
   showToast('Score cleared', '#8090A0');
   renderLeaderboard();
 }
-
 
 // ── PICKS ──
 function renderPicks() {
@@ -1014,60 +874,81 @@ function renderPicks() {
   }).join('');
 }
 
-// ── SUPER CHIPS ──
+// ── FIXED SUPER CHIP ADMIN PANEL ──
 function renderChips() {
   const container = document.getElementById('chips-container');
   const groupMatches = MATCH_SCHEDULE.filter(m => m.stage === 'group');
   const koMatches = MATCH_SCHEDULE.filter(m => ['r32','r16','qf','sf','final'].includes(m.stage));
 
-  const matchOpts = (matches) =>
+  const matchOpts = (matches, selectedId) =>
     `<option value="">— No chip yet —</option>` +
-    matches.map(m => `<option value="${m.id}">${m.label}: ${m.home} vs ${m.away}</option>`).join('');
+    matches.map(m => `<option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${m.label}: ${m.home} vs ${m.away}</option>`).join('');
+
+  const teamOptsForMatch = (matchId, selectedTeam) => {
+    const m = MATCH_SCHEDULE.find(x => x.id === matchId);
+    if (!m) return `<option value="">— Pick match first —</option>`;
+    return `<option value="">— Pick a team —</option>` +
+      [m.home, m.away].map(t => `<option value="${t}" ${t === selectedTeam ? 'selected' : ''}>${flag(t)} ${t}</option>`).join('');
+  };
 
   container.innerHTML = PLAYERS.map(p => {
     const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
+    const chip = state.chips[p] || {};
+    const gMatchId = chip.group || '';
+    const kMatchId = chip.ko || '';
     return `<div class="chip-card">
       <div class="chip-card-name">⚡ ${p}</div>
+      
       <div class="chip-slot">
-        <div class="chip-slot-label">Group Stage Chip</div>
-        <select class="chip-select" id="chip-g-${pid}" onchange="saveChip('${p}','group',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(groupMatches)}
+        <div class="chip-slot-label">Group Stage Chip — Match Only</div>
+        <select class="chip-select" id="chip-g-${pid}" onchange="saveGroupChip('${p}',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${matchOpts(groupMatches, gMatchId)}
         </select>
       </div>
-      <div class="chip-slot">
-        <div class="chip-slot-label">Knockout Chip</div>
-        <select class="chip-select" id="chip-k-${pid}" onchange="saveChip('${p}','ko',this.value)" ${!isAdmin ? 'disabled' : ''}>
-          ${matchOpts(koMatches)}
+      
+      <div class="chip-slot" style="margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border);">
+        <div class="chip-slot-label">Knockout Chip — Select Match</div>
+        <select class="chip-select" id="chip-k-${pid}" onchange="onKoChipMatchChange('${p}',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${matchOpts(koMatches, kMatchId)}
+        </select>
+        <div class="chip-slot-label" style="margin-top:8px">Knockout Chip — Specific Team to Double</div>
+        <select class="chip-select" id="chip-k-team-${pid}" onchange="saveKoChipTeam('${p}',this.value)" ${!isAdmin ? 'disabled' : ''}>
+          ${teamOptsForMatch(kMatchId, chip.koTeam)}
         </select>
       </div>
+      
     </div>`;
   }).join('');
-
-  // Restore saved chip selections
-  PLAYERS.forEach(p => {
-    const pid = p.replace(/[^a-zA-Z0-9]/g, '_');
-    const chip = state.chips[p] || {};
-    const gEl = document.getElementById('chip-g-' + pid);
-    const kEl = document.getElementById('chip-k-' + pid);
-    if (gEl && chip.group) gEl.value = chip.group;
-    if (kEl && chip.ko)    kEl.value = chip.ko;
-  });
 }
 
-function saveChip(player, type, matchId) {
+function saveGroupChip(player, matchId) {
   if (!state.chips[player]) state.chips[player] = {};
-  state.chips[player][type] = matchId || null;
+  state.chips[player].group = matchId || null;
   saveState();
-  showToast('Chip saved ⚡');
+  showToast('GS Chip saved ⚡');
+  renderLeaderboard();
+}
+
+function onKoChipMatchChange(player, matchId) {
+  if (!state.chips[player]) state.chips[player] = {};
+  state.chips[player].ko = matchId || null;
+  state.chips[player].koTeam = null; // Clears the team specifically when the match changes
+  saveState();
+  showToast('Match selected — now pick a team ⚡');
+  renderChips();   
+  renderLeaderboard();
+}
+
+function saveKoChipTeam(player, team) {
+  if (!state.chips[player]) state.chips[player] = {};
+  state.chips[player].koTeam = team || null;
+  saveState();
+  showToast('KO Chip locked in ⚡');
   renderLeaderboard();
 }
 
 // ── ADMIN AUTH ──
 const ADMIN_HASH = '30c1873ce6a93ff1ff4167e67af53e66ed35c369ea50ed4986ad8870f922d5d4';
-// Default password: wc2026admin
-// To change: open browser console and run:
-// crypto.subtle.digest('SHA-256',new TextEncoder().encode('newpwd')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
-
 let isAdmin = false;
 
 async function sha256(str) {
@@ -1116,7 +997,6 @@ function renderTabNav() {
 }
 
 function activateTab(id) {
-  
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById('tab-' + id);
   if (page) page.classList.add('active');
@@ -1125,7 +1005,6 @@ function activateTab(id) {
   if (btn) btn.classList.add('active');
 }
 
-// ── TOAST ──
 function showToast(msg, color) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1143,7 +1022,7 @@ function injectISTDate() {
     dateEl.textContent = `as on ${formatter.format(new Date())}`;
   }
 }
-injectISTDate(); // Runs immediately on page load
+injectISTDate();
 renderTabNav();
 activateTab('leaderboard');
 renderPicks();
@@ -1151,4 +1030,3 @@ initFirebase();
 </script>
 </body>
 </html>
-
