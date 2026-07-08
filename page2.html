@@ -662,7 +662,14 @@ function computePoints(player, stage) {
 const PENALTIES = {
   "Pavan Jami": -10, "Kireet": 10
 };
-
+ 
+// ── ELIMINATED TEAMS ──
+// Add teams here as they get knocked out. Admin updates this manually.
+const ELIMINATED = [
+  "Bosnia and Herzegovina", "Ghana", "Colombia", "Brazil", "Cape Verde", "Portugal", "Ecuador", "Canada", "DR Congo", "Mexico", "South Africa", "Croatia", "United States",
+ "Australia", "Algeria", "Senegal", "Netherlands", "Sweden", "Egypt", "Côte d'Ivoire", "Japan", "Germany", // example — replace with actual eliminated teams
+];
+ 
 // ── FIXED RANKING SORTER ──
 function getRankedPlayers(stage) {
   return [...PLAYERS]
@@ -725,10 +732,16 @@ function renderLeaderboard() {
 
   const tbody = document.getElementById('lb-body');
   tbody.innerHTML = ranked.map((r, i) => {
-    const picks = isGroup ? GROUP_PICKS[r.name] : KO_PICKS[r.name];
-    const p1 = picks && picks.p1 ? (flag(picks.p1) + ' ' + picks.p1) : '—';
-    const p2 = picks && picks.p2 ? (flag(picks.p2) + ' ' + picks.p2) : '—';
-    const p3 = isGroup && picks && picks.p3 ? (flag(picks.p3) + ' ' + picks.p3) : null;
+    const teamDisplay = (team) => {
+      if (!team) return '—';
+      const out = ELIMINATED.includes(team);
+      return out
+        ? `<span style="text-decoration:line-through;opacity:0.35">${flag(team)} ${team}</span>`
+        : `${flag(team)} ${team}`;
+    };
+    const p1 = picks && picks.p1 ? teamDisplay(picks.p1) : '—';
+    const p2 = picks && picks.p2 ? teamDisplay(picks.p2) : '—';
+    const p3 = isGroup && picks && picks.p3 ? teamDisplay(picks.p3) : null;
     const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
