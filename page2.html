@@ -329,7 +329,8 @@ const PENALTIES = { "Pavan Jami": -10, "Kireet": 10 };
 
 const ELIMINATED = [
   "Bosnia and Herzegovina", "Ghana", "Colombia", "Brazil", "Cape Verde", "Portugal", "Ecuador", "Canada", "DR Congo", "Mexico", "South Africa", "Croatia", "United States",
-  "Australia", "Algeria", "Senegal", "Netherlands", "Sweden", "Egypt", "Côte d'Ivoire", "Japan", "Germany"
+  "Australia", "Algeria", "Senegal", "Netherlands", "Sweden", "Egypt", "Côte d'Ivoire", "Japan", "Germany", "Parguay", "Austria", "Portugal", "England", "Norway", "Switzerland", 
+  "France", "Belgium",  "Morocco",
 ];
 
 const FLAGS = {
@@ -449,9 +450,11 @@ const MATCH_SCHEDULE = [
   { id:"qf_2",  stage:"qf",   md:2, home:"Spain",          away:"Belgium",         label:"QF · Match 2" },
   { id:"qf_3",  stage:"qf",   md:3, home:"Norway",         away:"England",         label:"QF · Match 3" },
   { id:"qf_4",  stage:"qf",   md:4, home:"Argentina",      away:"Switzerland",     label:"QF · Match 4" },
-  { id:"sf_1",  stage:"sf",   md:1, home:"TBD",         away:"TBD",         label:"Semi Final 1" },
-  { id:"sf_2",  stage:"sf",   md:2, home:"TBD",         away:"TBD",         label:"Semi Final 2" },
-  { id:"final", stage:"final",md:1, home:"TBD",         away:"TBD",         label:"THE FINAL 🏆" }
+ 
+  { id:"sf_1",  stage:"sf",   md:1, home:"France",         away:"Spain",           label:"Semi Final 1" },
+  { id:"sf_2",  stage:"sf",   md:2, home:"England",        away:"Argentina",       label:"Semi Final 2" },
+ 
+  { id:"final", stage:"final",md:1, home:"Spain",          away:"Argentina",       label:"THE FINAL 🏆" }
 ];
  
 let state = { scores: {}, chips: {}, currentStage: 'group' };
