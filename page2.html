@@ -329,7 +329,7 @@ const PENALTIES = { "Pavan Jami": -10, "Kireet": 10 };
 
 const ELIMINATED = [
   "Bosnia and Herzegovina", "Ghana", "Colombia", "Brazil", "Cape Verde", "Portugal", "Ecuador", "Canada", "DR Congo", "Mexico", "South Africa", "Croatia", "United States",
-  "Australia", "Algeria", "Senegal", "Netherlands", "Sweden", "Egypt", "Côte d'Ivoire", "Japan", "Germany", "Parguay", "Austria", "Portugal", "England", "Norway", "Switzerland", 
+  "Australia", "Algeria", "Senegal", "Netherlands", "Sweden", "Egypt", "Côte d'Ivoire", "Japan", "Germany", "Paraguay", "Austria", "Portugal", "England", "Norway", "Switzerland", 
   "France", "Belgium",  "Morocco",
 ];
 
@@ -608,12 +608,14 @@ function renderLeaderboard() {
     const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : '';
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
-    const chip = state.chips[r.name] || {};
+   const chip = state.chips[r.name] || {};
     const chipMatchId = isGroup ? chip.group : chip.ko;
-    let chipBadge = '';
+    let chipBadge = null;
+    let chipBadgeClass = 'chip-badge';
     if (chipMatchId) {
       const isPlayed = state.scores[chipMatchId] !== undefined;
-      chipBadge = `<span class="chip-badge${isPlayed?' used':''}">${isPlayed?'Used':'Active'}</span>`;
+      chipBadge = isPlayed ? `⚡ ${isGroup?'GS':'KO'} Chip - Used` : `⚡ ${isGroup?'GS':'KO'} Chip - Activated`;
+      chipBadgeClass = isPlayed ? 'chip-badge used' : 'chip-badge';
     }
 
     const displayTotal = isGroup ? r.gsRaw : r.pts;
